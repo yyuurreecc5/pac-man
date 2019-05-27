@@ -1,0 +1,22 @@
+{
+  "name": "PacMan",
+  "version": "0.0.1",
+  "description": "HTML5 PacMan game",
+  "main": "index.ts",
+  "author": "Yuriy Kiselev",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack --watch",
+    "start": "webpack --watch & webpack-dev-server --open"
+  },
+  "dependencies": {
+    "@types/node": "^11.13.7",
+    "file-loader": "^3.0.1",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "pacman": {
+    "initState": "PACMAN_RUN",
+    "speed": 3.5
+  },
+  "ghost-red": {
+    "initState": "GHOSTRED_RUN",
+    "speed": 3.5
+  }
+}

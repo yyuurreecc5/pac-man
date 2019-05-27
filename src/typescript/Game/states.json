@@ -1,0 +1,37 @@
+{
+  "PACMAN_STAY": {
+    "sprite": "pacman-b",
+    "tics": 0,
+    "nextState": "PACMAN_STAY"
+  },
+  "PACMAN_RUN": {
+    "sprite": "pacman-b",
+    "tics": 2,
+    "nextState": "PACMAN_RUN_1"
+  },
+  "PACMAN_RUN_1": {
+    "sprite": "pacman-c",
+    "tics": 2,
+    "nextState": "PACMAN_RUN_2"
+  },
+  "PACMAN_RUN_2": {
+    "sprite": "pacman-b",
+    "tics": 2,
+    "nextState": "PACMAN_RUN_3"
+  },
+  "PACMAN_RUN_3": {
+    "sprite": "pacman-a",
+    "tics": 2,
+    "nextState": "PACMAN_RUN"
+  },
+  "GHOSTRED_RUN": {
+    "sprite": "ghostred-a",
+    "tics": 10,
+    "nextState": "GHOSTRED_RUN_1"
+  },
+  "GHOSTRED_RUN_1": {
+    "sprite": "ghostred-b",
+    "tics": 10,
+    "nextState": "GHOSTRED_RUN"
+  }
+}
