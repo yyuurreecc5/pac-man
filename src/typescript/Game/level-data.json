@@ -1,90 +1,184 @@
 {
-  "gridSize": {
-    "width": 28,
-    "height": 31
+  "gridSize":{
+    "width":28,
+    "height":31
   },
-  "layers": {
-    "walls": {
-      "z-index": 0,
-      "entries": [
+  "fieldSize":{
+    "width":16,
+    "height":16
+  },
+  "layers":{
+    "walls":{
+      "zIndex":0,
+      "entries":[
         {
-          "name": "top-left",
-          "image": {
-            "name": "top-left.png",
-            "coordinates": {
-              "x": 1,
-              "y": 2
-            },
-            "size": {
-              "width": 32,
-              "height": 32
-            },
-            "flipped": true,
-            "angle": 90
-          }
+          "name":"double-corner",
+          "coordinates":{
+            "x":0,
+            "y":0
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":16,
+            "y":0
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":48,
+            "y":0
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":32,
+            "y":0
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":0,
+            "y":16
+          },
+          "flipped":false,
+          "direction": "down"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":0,
+            "y":32
+          },
+          "flipped":false,
+          "direction":"down"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":0,
+            "y":48
+          },
+          "flipped":false,
+          "direction":"down"
+        },
+        {
+          "name":"double-corner",
+          "coordinates":{
+            "x":32,
+            "y":32
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":48,
+            "y":32
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double-corner",
+          "coordinates":{
+            "x":64,
+            "y":32
+          },
+          "flipped":false,
+          "direction":"down"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":32,
+            "y":48
+          },
+          "flipped":false,
+          "direction":"down"
+        },
+        {
+          "name":"double-corner",
+          "coordinates":{
+            "x":32,
+            "y":64
+          },
+          "flipped":false,
+          "direction": "up"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":48,
+            "y":64
+          },
+          "flipped":false,
+          "direction": "right"
+        },
+        {
+          "name":"double-corner",
+          "coordinates":{
+            "x":64,
+            "y":64
+          },
+          "flipped":false,
+          "direction": "left"
+        },
+        {
+          "name":"double",
+          "coordinates":{
+            "x":64,
+            "y":48
+          },
+          "flipped":false,
+          "direction":"down"
         }
       ]
     },
-    "eats": {
-      "params": {
-        "z-index": 0
-      },
-      "entries": [
+    "eats":{
+      "zIndex":0,
+      "entries":[
+
+      ]
+    },
+    "enemies":{
+      "zIndex":0,
+      "entries":[
         {
-          "name": "big-eat",
-          "image": {
-            "name": "big-eat.png",
-            "coordinates": {
-              "x": 0,
-              "y": 1
-            },
-            "size": {
-              "width": 32,
-              "height": 32
-            }
-          }
+          "name":"ghost-red",
+          "coordinates":{
+            "x":32,
+            "y":48
+          },
+          "flipped":false,
+          "direction": "right"
         }
       ]
     },
-    "enemies":  {
-      "params": {
-        "z-index": 3
-      },
-      "entries": [
+    "players":{
+      "zIndex":"1",
+      "entries":[
         {
-          "name": "pinky",
-          "image": {
-            "name": "pinky.png",
-            "coordinates": {
-              "x": 0,
-              "y": 1
-            },
-            "size": {
-              "width": 32,
-              "height": 32
-            }
-          }
-        }
-      ]
-    },
-    "players": {
-      "params": {
-        "z-index": 2
-      },
-      "entries": [
-        {
-          "name": "pacman",
-          "image": {
-            "name": "pacman.png",
-            "coordinates": {
-              "x": 10,
-              "y": 5
-            },
-            "size": {
-              "width": 14,
-              "height": 14
-            }
-          }
+          "name":"pacman",
+          "coordinates":{
+            "x":16,
+            "y":16
+          },
+          "flipped":false,
+          "direction": "right"
         }
       ]
     }

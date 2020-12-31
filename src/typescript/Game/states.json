@@ -33,5 +33,15 @@
     "sprite": "ghostred-b",
     "tics": 10,
     "nextState": "GHOSTRED_RUN"
+  },
+  "DOUBLE_CORNER": {
+    "sprite": "double-corner",
+    "tics": 0,
+    "nextState": "DOUBLE_CORNER"
+  },
+  "DOUBLE": {
+    "sprite": "double",
+    "tics": 0,
+    "nextState": "DOUBLE"
   }
 }

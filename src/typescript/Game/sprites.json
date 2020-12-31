@@ -1,22 +1,128 @@
 {
-  "pacman-a_0.png": "pacman-a_0.png",
-  "pacman-a_1.png": "pacman-a_1.png",
-  "pacman-a_2.png": "pacman-a_2.png",
-  "pacman-a_3.png": "pacman-a_3.png",
-  "pacman-b_0.png": "pacman-b_0.png",
-  "pacman-b_1.png": "pacman-b_1.png",
-  "pacman-b_2.png": "pacman-b_2.png",
-  "pacman-b_3.png": "pacman-b_3.png",
-  "pacman-c_0.png": "pacman-c_0.png",
-  "pacman-c_1.png": "pacman-c_1.png",
-  "pacman-c_2.png": "pacman-c_2.png",
-  "pacman-c_3.png": "pacman-c_3.png",
-  "ghostred-a_0.png": "ghostred-a_0.png",
-  "ghostred-a_1.png": "ghostred-a_1.png",
-  "ghostred-a_2.png": "ghostred-a_2.png",
-  "ghostred-a_3.png": "ghostred-a_3.png",
-  "ghostred-b_0.png": "ghostred-b_0.png",
-  "ghostred-b_1.png": "ghostred-b_1.png",
-  "ghostred-b_2.png": "ghostred-b_2.png",
-  "ghostred-b_3.png": "ghostred-b_3.png"
+    "pacman-a": {
+        "right": {
+            "image": "pacman1",
+            "rotate": 0
+        },
+        "down": {
+            "image": "pacman1",
+            "rotate": 90
+        },
+        "left": {
+            "image": "pacman1",
+            "rotate": 180
+        },
+        "up": {
+            "image": "pacman1",
+            "rotate": 270
+        }
+    },
+    "pacman-b": {
+        "right": {
+            "image": "pacman2",
+            "rotate": 0
+        },
+        "down": {
+            "image": "pacman2",
+            "rotate": 90
+        },
+        "left": {
+            "image": "pacman2",
+            "rotate": 180
+        },
+        "up": {
+            "image": "pacman2",
+            "rotate": 270
+        }
+    },
+    "pacman-c": {
+        "right": {
+            "image": "pacman3",
+            "rotate": 0
+        },
+        "down": {
+            "image": "pacman3",
+            "rotate": 90
+        },
+        "left": {
+            "image": "pacman3",
+            "rotate": 180
+        },
+        "up": {
+            "image": "pacman3",
+            "rotate": 270
+        }
+    },
+    "ghostred-a": {
+        "right": {
+            "image": "ghostred-right-a",
+            "rotate": 0
+        },
+        "down": {
+            "image": "ghostred-down-a",
+            "rotate": 0
+        },
+        "left": {
+            "image": "ghostred-left-a",
+            "rotate": 0
+        },
+        "up": {
+            "image": "ghostred-up-a",
+            "rotate": 0
+        }
+    },
+    "ghostred-b": {
+        "right": {
+            "image": "ghostred-right-b",
+            "rotate": 0
+        },
+        "down": {
+            "image": "ghostred-down-b",
+            "rotate": 0
+        },
+        "left": {
+            "image": "ghostred-left-b",
+            "rotate": 0
+        },
+        "up": {
+            "image": "ghostred-up-b",
+            "rotate": 0
+        }
+    },
+    "double": {
+        "right": {
+            "image": "double",
+            "rotate": 0
+        },
+        "down": {
+            "image": "double",
+            "rotate": 90
+        },
+        "left": {
+            "image": "double",
+            "rotate": 180
+        },
+        "up": {
+            "image": "double",
+            "rotate": 270
+        }
+    },
+    "double-corner": {
+        "right": {
+            "image": "double-corner",
+            "rotate": 0
+        },
+        "down": {
+            "image": "double-corner",
+            "rotate": 90
+        },
+        "left": {
+            "image": "double-corner",
+            "rotate": 180
+        },
+        "up": {
+            "image": "double-corner",
+            "rotate": 270
+        }
+    }
 }

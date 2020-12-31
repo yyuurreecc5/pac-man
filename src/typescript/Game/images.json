@@ -1,0 +1,15 @@
+{
+    "pacman1": "pacman-b_0.png",
+    "pacman2": "pacman-a_0.png",
+    "pacman3": "pacman-c_0.png",
+    "ghostred-right-a": "ghostred-a_0.png",
+    "ghostred-down-a": "ghostred-a_1.png",
+    "ghostred-left-a": "ghostred-a_2.png",
+    "ghostred-up-a": "ghostred-a_3.png",
+    "ghostred-right-b": "ghostred-b_0.png",
+    "ghostred-down-b": "ghostred-b_1.png",
+    "ghostred-left-b": "ghostred-b_2.png",
+    "ghostred-up-b": "ghostred-b_3.png",
+    "double": "double_0.png",
+    "double-corner": "double-corner_0.png"
+}
