@@ -1,14 +1,8 @@
-import states from './states.json';
-import entities from './entities.json';
-import images from './images.json';
-import sprites from './sprites.json';
-import levelData from './level-data.json';
-const directions = [
-    'right',
-    'down',
-    'left',
-    'up'
-];
+import states from '../game-data/states/states.json';
+import entities from '../game-data/entities/entities.json';
+import images from '../game-data/images/images.json';
+import sprites from '../game-data/sprites/sprites.json';
+import levelData from '../game-data/game-data.json';
 class Game {
     constructor() {
         this.canvas = document.getElementById('canvas');
@@ -19,7 +13,6 @@ class Game {
         this.entities = entities;
         this.imagesNew = images;
         this.sprites = sprites;
-        console.log(sprites);
         this.levelData = levelData;
         this.images = {};
         this.objects = [];
@@ -37,7 +30,7 @@ class Game {
         });
         const imageKeys = Object.keys(this.imagesNew);
         const promises = imageKeys.map((imageKey) => {
-            const imageSrc = require(`./${this.imagesNew[imageKey]}`);
+            const imageSrc = require(`../game-data/images/${this.imagesNew[imageKey]}`);
             return new Promise((resolve) => {
                 const image = new Image();
                 image.onload = () => {
@@ -67,7 +60,7 @@ class Game {
                     dx: 0,
                     dy: 0,
                     tics: 0,
-                    direction: 'right',
+                    direction: entry.direction,
                     currentState: this.states[entity.initState],
                     size: entity.size,
                     angle: entry.angle
@@ -92,7 +85,7 @@ class Game {
                 pacman.direction = 'up';
                 return;
         }
-        const ghostRed = this.objects.find(object => object.name === 'ghost-red');
+        const ghostRed = this.objects.find(object => object.name === 'ghost');
         switch (event.key) {
             case 'd':
                 ghostRed.direction = 'right';

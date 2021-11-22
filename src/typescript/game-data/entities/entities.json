@@ -1,0 +1,1 @@
+{"pacman":{"name":"pacman","speed":"2","size":{"width":"32","height":"32"},"initState":"pacman-run","deathState":""},"ghost":{"name":"ghost","speed":"2","size":{"width":"32","height":"32"},"initState":"ghost-run","deathState":""}}

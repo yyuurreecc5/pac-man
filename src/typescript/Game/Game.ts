@@ -1,15 +1,8 @@
-import states from './states.json';
-import entities from './entities.json';
-import images from './images.json';
-import sprites from './sprites.json';
-import levelData from './level-data.json';
-
-const directions = [
-    'right',
-    'down',
-    'left',
-    'up'
-];
+import states from '../game-data/states/states.json';
+import entities from '../game-data/entities/entities.json';
+import images from '../game-data/images/images.json';
+import sprites from '../game-data/sprites/sprites.json';
+import levelData from '../game-data/game-data.json';
 
 class Game {
     private readonly images: Object;
@@ -17,13 +10,12 @@ class Game {
     private ctx: CanvasRenderingContext2D;
 
     private readonly states: object;
-    private entities: object;
+    private readonly entities: object;
     private readonly sprites: object;
     private tics: number;
-    private currentState: any;
     private objects: any;
     private levelData: any;
-    private imagesNew: any;
+    private readonly imagesNew: any;
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
         this.canvas.width = 400;
@@ -56,7 +48,7 @@ class Game {
 
         const imageKeys = Object.keys(this.imagesNew);
         const promises = imageKeys.map((imageKey) => {
-            const imageSrc = require(`./${this.imagesNew[imageKey]}`);
+            const imageSrc = require(`../game-data/images/${this.imagesNew[imageKey]}`);
             return new Promise((resolve) => {
                 const image = new Image();
                 image.onload = () => {
@@ -106,7 +98,7 @@ class Game {
             case 'ArrowUp': pacman.direction = 'up'; return;
         }
 
-        const ghostRed = this.objects.find(object => object.name === 'ghost-red');
+        const ghostRed = this.objects.find(object => object.name === 'ghost');
         switch(event.key) {
             case 'd': ghostRed.direction = 'right'; return;
             case 's': ghostRed.direction = 'down'; return;
