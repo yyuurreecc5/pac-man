@@ -3,11 +3,12 @@ import entities from '../game-data/entities/entities.json';
 import images from '../game-data/images/images.json';
 import sprites from '../game-data/sprites/sprites.json';
 import levelData from '../game-data/game-data.json';
+
 class Game {
     constructor() {
         this.canvas = document.getElementById('canvas');
-        this.canvas.width = 400;
-        this.canvas.height = 500;
+        this.canvas.width = levelData.gridSize.width;
+        this.canvas.height = levelData.gridSize.height;
         this.ctx = this.canvas.getContext('2d');
         this.states = states;
         this.entities = entities;

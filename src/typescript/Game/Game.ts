@@ -4,6 +4,8 @@ import images from '../game-data/images/images.json';
 import sprites from '../game-data/sprites/sprites.json';
 import levelData from '../game-data/game-data.json';
 
+const SCALE = 0.5;
+
 class Game {
     private readonly images: Object;
     private canvas: HTMLCanvasElement;
@@ -18,10 +20,10 @@ class Game {
     private readonly imagesNew: any;
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
-        this.canvas.width = 400;
-        this.canvas.height = 500;
+	      this.canvas.width = levelData.gridSize.width * levelData.fieldSize.width * SCALE;
+	      this.canvas.height = levelData.gridSize.height * levelData.fieldSize.height * SCALE;
         this.ctx = this.canvas.getContext('2d');
-
+				this.ctx.scale(SCALE, SCALE);
         this.states = states;
         this.entities = entities;
         this.imagesNew = images;
@@ -54,9 +56,10 @@ class Game {
                 image.onload = () => {
                     const result = {};
                     result[imageKey] = image;
-                    resolve(result);
+	                  resolve(result);
                 };
                 image.src = imageSrc;
+
             })
         });
         return Promise.all(promises).then((values: Array<HTMLImageElement>) => {
@@ -68,6 +71,7 @@ class Game {
 
     initObjects() {
         const layers = this.levelData.layers;
+				console.log('layers = ', layers);
         let entries = [];
         for(const key in layers) {
             entries = entries.concat(layers[key].entries.map((entry) => {
@@ -130,7 +134,6 @@ class Game {
 
             object.x += Math.floor(object.dx);
             object.y += Math.floor(object.dy);
-            // console.log(object.dx, object.dy);
             if(object.tics >= object.currentState.tics) {
                 object.tics = 0;
                 object.currentState = this.states[object.currentState.nextState];
