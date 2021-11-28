@@ -4,7 +4,46 @@ import images from '../game-data/images/images.json';
 import sprites from '../game-data/sprites/sprites.json';
 import levelData from '../game-data/game-data.json';
 
-const SCALE = 0.5;
+const SCALE = 0.75;
+let flag = 0;
+
+enum LAYERS {
+	WALL = 'walls',
+	EAT = 'eats'
+}
+
+enum DIRECTION {
+	LEFT = 'left',
+	RIGHT = 'right',
+	UP = 'up',
+	DOWN = 'down',
+}
+
+enum BUTTON_KEY {
+	ArrowRight = 'ArrowRight',
+	ArrowLeft = 'ArrowLeft',
+	ArrowUp = 'ArrowUp',
+	ArrowDown = 'ArrowDown',
+	No = 'No',
+}
+
+
+type TController = Partial<Record<BUTTON_KEY, DIRECTION>>;
+const ControllerMain: TController = {
+	[BUTTON_KEY.ArrowRight]: DIRECTION.RIGHT,
+	[BUTTON_KEY.ArrowDown]: DIRECTION.DOWN,
+	[BUTTON_KEY.ArrowLeft]: DIRECTION.LEFT,
+	[BUTTON_KEY.ArrowUp]: DIRECTION.UP,
+}
+
+enum ENTITIES  {
+	PACMAN= 'pacman',
+}
+
+const ControllerMap: Record<ENTITIES, TController> = {
+	[ENTITIES.PACMAN]: ControllerMain,
+}
+
 
 class Game {
     private readonly images: Object;
@@ -18,6 +57,7 @@ class Game {
     private objects: any;
     private levelData: any;
     private readonly imagesNew: any;
+		private pressedKey: BUTTON_KEY;
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
 	      this.canvas.width = levelData.gridSize.width * levelData.fieldSize.width * SCALE;
@@ -29,7 +69,7 @@ class Game {
         this.imagesNew = images;
         this.sprites = sprites;
         this.levelData = levelData;
-
+				this.pressedKey = BUTTON_KEY.ArrowLeft;
         this.images = {};
         this.objects = [];
     }
@@ -37,7 +77,8 @@ class Game {
     start () {
         this.init()
             .then(() => {
-                this.step();
+	            this.draw();
+	            this.step();
             });
     }
 
@@ -45,7 +86,7 @@ class Game {
         this.initObjects();
 
         document.addEventListener('keydown', (event) => {
-            this.input(event);
+            this.inputHandler(event);
         });
 
         const imageKeys = Object.keys(this.imagesNew);
@@ -62,7 +103,8 @@ class Game {
 
             })
         });
-        return Promise.all(promises).then((values: Array<HTMLImageElement>) => {
+
+	    return Promise.all(promises).then((values: Array<HTMLImageElement>) => {
             values.forEach((value) => {
                 this.images[Object.keys(value)[0]] = value[Object.keys(value)[0]];
             })
@@ -71,12 +113,11 @@ class Game {
 
     initObjects() {
         const layers = this.levelData.layers;
-				console.log('layers = ', layers);
         let entries = [];
         for(const key in layers) {
             entries = entries.concat(layers[key].entries.map((entry) => {
                 const entity = this.entities[entry.name];
-                return {
+                const object =  {
                     name: entry.name,
                     x: entry.coordinates.x,
                     y: entry.coordinates.y,
@@ -86,86 +127,179 @@ class Game {
                     direction: entry.direction,
                     currentState: this.states[entity.initState],
                     size: entity.size,
-                    angle: entry.angle
+                    angle: entry.angle,
+	                  layer: key,
+	                  controller: ControllerMap[entry.name] || null
                 }
+								this.setMove(object);
+								return object;
             }));
         }
         this.objects = entries;
     }
 
-    input(event) {
-        const pacman = this.objects.find(object => object.name === 'pacman');
-        switch(event.key) {
-            case 'ArrowRight': pacman.direction = 'right'; return;
-            case 'ArrowDown': pacman.direction = 'down'; return;
-            case 'ArrowLeft': pacman.direction = 'left'; return;
-            case 'ArrowUp': pacman.direction = 'up'; return;
-        }
+		inputHandler(event) {
+			if(event.key === 'Enter') {
+				this.update();
+				this.draw();
+				return;
+			}
+			this.pressedKey = event.key;
+		}
 
-        const ghostRed = this.objects.find(object => object.name === 'ghost');
-        switch(event.key) {
-            case 'd': ghostRed.direction = 'right'; return;
-            case 's': ghostRed.direction = 'down'; return;
-            case 'a': ghostRed.direction = 'left'; return;
-            case 'w': ghostRed.direction = 'up'; return;
-        }
+    inputProcessing() {
+      const pacman = this.objects.find(object => object.name === 'pacman');
+			if((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
+				pacman.direction = ControllerMain[this.pressedKey];
+			}
     }
 
     update() {
+				const movableObjects = this.getMovableObjects();
+		    for(let i = 0; i < movableObjects.length; i++) {
+					const isCol = this.objects.some((object) => {
+						return this.checkCollision(movableObjects[i], object, LAYERS.WALL)
+					})
+
+			    if(!isCol) {
+				    this.moveObject(movableObjects[i]);
+			    }
+		    }
+
+
+	    for(let i = 0; i < movableObjects.length; i++) {
+		    const direction: DIRECTION | null = movableObjects[i]?.controller ? movableObjects[i].controller[this.pressedKey] : null;
+				if(direction) {
+					const isBlocked = this.objects.some((object) => {
+						return this.isBlocked(movableObjects[i], object, LAYERS.WALL, direction);
+					})
+					if(!isBlocked) {
+						this.inputProcessing();
+					}
+				}
+	    }
+
         this.objects.forEach((object) => {
-
-            const entity = this.entities[object.name];
-
-            if(object.direction === 'up') {
-                object.dx = 0;
-                object.dy = -entity.speed;
-            } else if( object.direction === 'down') {
-                object.dx = 0;
-                object.dy = entity.speed;
-            } else if( object.direction === 'left') {
-                object.dx = -entity.speed;
-                object.dy = 0;
-            } else if(object.direction === 'right') {
-                object.dx = entity.speed;
-                object.dy = 0;
-            } else {
-                object.dx = object.dy = 0;
-            }
-
-            object.x += Math.floor(object.dx);
-            object.y += Math.floor(object.dy);
-            if(object.tics >= object.currentState.tics) {
-                object.tics = 0;
-                object.currentState = this.states[object.currentState.nextState];
-            }
-            object.tics++;
+						if(Number(object.currentState.tics) === 0) return;
+	          if(object.tics >= object.currentState.tics) {
+	              object.tics = 0;
+	              object.currentState = this.states[object.currentState.nextState];
+	          }
+	          object.tics++;
         })
     }
+
+		getMovableObjects() {
+			const movableObjects = [];
+			for(let i = 0; i < this.objects.length; i++) {
+				if(this.objects[i].dx !== 0 || this.objects[i].dy !== 0) {
+					movableObjects.push(this.objects[i]);
+				}
+			}
+			return movableObjects;
+		}
+
+		checkCollision(movableObject, object, layer) {
+			const direction = Object.values(ControllerMain).find(direction => movableObject.direction === direction);
+			if(direction) {
+				const isBlocked = this.isBlocked(movableObject, object, layer, direction);
+				return isBlocked;
+			}
+		}
+
+		isBlocked(movableObject, object, layer, direction: DIRECTION) {
+			if(object.layer !== layer) return false;
+			if(!this.needCheck(direction, movableObject, object)) return false;
+
+			switch (direction) {
+				case DIRECTION.LEFT:
+					return movableObject.x === object.x + levelData.fieldSize.width;
+				case DIRECTION.RIGHT:
+					return movableObject.x === object.x - levelData.fieldSize.width;
+				case DIRECTION.UP:
+					return movableObject.y === object.y + levelData.fieldSize.height;
+				case DIRECTION.DOWN:
+					return movableObject.y === object.y - levelData.fieldSize.height
+			}
+			return false;
+		}
+
+		needCheck(direction: DIRECTION, movableObject, object) {
+			switch (direction) {
+				case DIRECTION.LEFT:
+				case DIRECTION.RIGHT:
+						return movableObject.x % this.levelData.fieldSize.width === 0 && Math.abs(movableObject.y - object.y) < this.levelData.fieldSize.height;
+				case DIRECTION.DOWN:
+				case DIRECTION.UP:
+					return movableObject.y % this.levelData.fieldSize.height === 0 && Math.abs(movableObject.x - object.x) < this.levelData.fieldSize.width;
+			}
+		}
+
+		setMove(object) {
+			const entity = this.entities[object.name];
+
+			if(object.direction === 'up') {
+				object.dx = 0;
+				object.dy = -entity.speed;
+			} else if( object.direction === 'down') {
+				object.dx = 0;
+				object.dy = +entity.speed;
+			} else if( object.direction === 'left') {
+				object.dx = -entity.speed;
+				object.dy = 0;
+			} else if(object.direction === 'right') {
+				object.dx = +entity.speed;
+				object.dy = 0;
+			} else {
+				object.dx = object.dy = 0;
+			}
+		}
+
+		moveObject(object) {
+			this.setMove(object);
+			object.x += object.dx;
+			object.y += object.dy;
+		}
 
     draw() {
         const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
         const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
         this.ctx.fillStyle = "#000";
         this.ctx.fillRect(0,0, levelWidth, levelHeight);
+
         this.objects.forEach((object) => {
             const halfWidth = object.size.width / 2;
             const halfHeight = object.size.height / 2;
+	          const sprite = this.sprites[object.currentState.sprite];
+	          const spr = sprite[object.direction];
+
             this.ctx.save();
-            this.ctx.translate(object.x + halfWidth, object.y + halfHeight); // change origin
-            const sprite = this.sprites[object.currentState.sprite];
-            const spr = sprite[object.direction];
+		        const offsetX = Math.floor((this.levelData.fieldSize.width - object.size.width) / 2);
+		        const offsetY = Math.floor((this.levelData.fieldSize.height - object.size.height) / 2);
+	          this.ctx.translate(object.x + offsetX , object.y + offsetY); // change origin
 
-            if(spr.rotate > 0) {
-                this.ctx.rotate(spr.rotate * Math.PI / 180);
-            }
+		        if(spr.rotate > 0) {
+	            this.ctx.translate(halfWidth, halfHeight); // change origin
+	            this.ctx.rotate(spr.rotate * Math.PI / 180);
+	            this.ctx.translate(-halfWidth, -halfHeight); // change origin
+						}
 
-            this.ctx.translate(-halfWidth, -halfHeight); // change origin
             const image = this.images[spr.image];
             this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
             this.ctx.restore();
         })
+	    this.drawGrid()
 
     }
+
+		drawGrid() {
+			this.ctx.strokeStyle = "#FFFFFF";
+			for(let w = 0; w < levelData.gridSize.width; w++) {
+				for(let h = 0; h < levelData.gridSize.height; h++) {
+					this.ctx.strokeRect(w * this.levelData.fieldSize.width, h * this.levelData.fieldSize.height, this.levelData.fieldSize.width, this.levelData.fieldSize.height);
+				}
+			}
+		}
 
     step() {
         requestAnimationFrame(this.step.bind(this));
