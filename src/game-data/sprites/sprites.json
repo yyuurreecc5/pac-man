@@ -1,1 +1,86 @@
-{"pacman-run-1":{"left":{"image":"pacman-run-1","rotate":180},"up":{"image":"pacman-run-1","rotate":270},"right":{"image":"pacman-run-1","rotate":0},"down":{"image":"pacman-run-1","rotate":90}},"pacman-run-2":{"left":{"image":"pacman-run-2","rotate":180},"up":{"image":"pacman-run-2","rotate":270},"right":{"image":"pacman-run-2","rotate":0},"down":{"image":"pacman-run-2","rotate":90}},"pacman-run-3":{"left":{"image":"pacman-run-3","rotate":0},"up":{"image":"pacman-run-3","rotate":0},"right":{"image":"pacman-run-3","rotate":0},"down":{"image":"pacman-run-3","rotate":0}},"ghost-run-1":{"left":{"image":"ghost-run-8","rotate":0},"up":{"image":"ghost-run-4","rotate":0},"right":{"image":"ghost-run-6","rotate":0},"down":{"image":"ghost-run-5","rotate":0}},"ghost-run-2":{"left":{"image":"ghost-run-7","rotate":0},"up":{"image":"ghost-run-1","rotate":0},"right":{"image":"ghost-run-3","rotate":0},"down":{"image":"ghost-run-2","rotate":0}},"wall-double":{"left":{"image":"wall-double","rotate":270},"up":{"image":"wall-double","rotate":0},"right":{"image":"wall-double","rotate":90},"down":{"image":"wall-double","rotate":0}},"wall-double-fork":{"left":{"image":"wall-double-fork","rotate":90},"up":{"image":"wall-double-fork","rotate":180},"right":{"image":"wall-double-fork","rotate":270},"down":{"image":"wall-double-fork","rotate":0}},"wall-double-corner":{"left":{"image":"wall-double-corner","rotate":270},"up":{"image":"wall-double-corner","rotate":0},"right":{"image":"wall-double-corner","rotate":90},"down":{"image":"wall-double-corner","rotate":180}},"wall-double-closed":{"left":{"image":"wall-double-closed","rotate":0},"up":{"image":"wall-double-closed","rotate":90},"right":{"image":"wall-double-closed","rotate":180},"down":{"image":"wall-double-closed","rotate":270}},"wall-double-closed-with-door":{"left":{"image":"wall-double-closed-with-door","rotate":180},"up":{"image":"wall-double-closed-with-door","rotate":270},"right":{"image":"wall-double-closed-with-door","rotate":0},"down":{"image":"wall-double-closed-with-door","rotate":90}},"door":{"left":{"image":"door","rotate":270},"up":{"image":"door","rotate":0},"right":{"image":"door","rotate":90},"down":{"image":"door","rotate":180}},"big-eat":{"left":{"image":"big-eat","rotate":0},"up":{"image":"big-eat","rotate":0},"right":{"image":"big-eat","rotate":0},"down":{"image":"big-eat","rotate":0}},"eat":{"left":{"image":"eat","rotate":0},"up":{"image":"eat","rotate":0},"right":{"image":"eat","rotate":0},"down":{"image":"eat","rotate":0}},"empty":{"left":{"image":"empty","rotate":0},"up":{"image":"empty","rotate":0},"right":{"image":"empty","rotate":0},"down":{"image":"empty","rotate":0}}}
+{
+  "pacman-run-1": {
+    "left": { "image": "pacman-run-1", "rotate": 180 },
+    "up": { "image": "pacman-run-1", "rotate": 270 },
+    "right": { "image": "pacman-run-1", "rotate": 0 },
+    "down": { "image": "pacman-run-1", "rotate": 90 }
+  },
+  "pacman-run-2": {
+    "left": { "image": "pacman-run-2", "rotate": 180 },
+    "up": { "image": "pacman-run-2", "rotate": 270 },
+    "right": { "image": "pacman-run-2", "rotate": 0 },
+    "down": { "image": "pacman-run-2", "rotate": 90 }
+  },
+  "pacman-run-3": {
+    "left": { "image": "pacman-run-3", "rotate": 0 },
+    "up": { "image": "pacman-run-3", "rotate": 0 },
+    "right": { "image": "pacman-run-3", "rotate": 0 },
+    "down": { "image": "pacman-run-3", "rotate": 0 }
+  },
+  "ghost-run-1": {
+    "left": { "image": "ghost-run-8", "rotate": 0 },
+    "up": { "image": "ghost-run-4", "rotate": 0 },
+    "right": { "image": "ghost-run-6", "rotate": 0 },
+    "down": { "image": "ghost-run-5", "rotate": 0 }
+  },
+  "ghost-run-2": {
+    "left": { "image": "ghost-run-7", "rotate": 0 },
+    "up": { "image": "ghost-run-1", "rotate": 0 },
+    "right": { "image": "ghost-run-3", "rotate": 0 },
+    "down": { "image": "ghost-run-2", "rotate": 0 }
+  },
+  "wall-double": {
+    "left": { "image": "wall-double", "rotate": 270 },
+    "up": { "image": "wall-double", "rotate": 0 },
+    "right": { "image": "wall-double", "rotate": 90 },
+    "down": { "image": "wall-double", "rotate": 0 }
+  },
+  "wall-double-fork": {
+    "left": { "image": "wall-double-fork", "rotate": 90 },
+    "up": { "image": "wall-double-fork", "rotate": 180 },
+    "right": { "image": "wall-double-fork", "rotate": 270 },
+    "down": { "image": "wall-double-fork", "rotate": 0 }
+  },
+  "wall-double-corner": {
+    "left": { "image": "wall-double-corner", "rotate": 270 },
+    "up": { "image": "wall-double-corner", "rotate": 0 },
+    "right": { "image": "wall-double-corner", "rotate": 90 },
+    "down": { "image": "wall-double-corner", "rotate": 180 }
+  },
+  "wall-double-closed": {
+    "left": { "image": "wall-double-closed", "rotate": 0 },
+    "up": { "image": "wall-double-closed", "rotate": 90 },
+    "right": { "image": "wall-double-closed", "rotate": 180 },
+    "down": { "image": "wall-double-closed", "rotate": 270 }
+  },
+  "wall-double-closed-with-door": {
+    "left": { "image": "wall-double-closed-with-door", "rotate": 180 },
+    "up": { "image": "wall-double-closed-with-door", "rotate": 270 },
+    "right": { "image": "wall-double-closed-with-door", "rotate": 0 },
+    "down": { "image": "wall-double-closed-with-door", "rotate": 90 }
+  },
+  "door": {
+    "left": { "image": "door", "rotate": 270 },
+    "up": { "image": "door", "rotate": 0 },
+    "right": { "image": "door", "rotate": 90 },
+    "down": { "image": "door", "rotate": 180 }
+  },
+  "big-eat": {
+    "left": { "image": "big-eat", "rotate": 0 },
+    "up": { "image": "big-eat", "rotate": 0 },
+    "right": { "image": "big-eat", "rotate": 0 },
+    "down": { "image": "big-eat", "rotate": 0 }
+  },
+  "eat": {
+    "left": { "image": "eat", "rotate": 0 },
+    "up": { "image": "eat", "rotate": 0 },
+    "right": { "image": "eat", "rotate": 0 },
+    "down": { "image": "eat", "rotate": 0 }
+  },
+  "empty": {
+    "left": { "image": "empty", "rotate": 0 },
+    "up": { "image": "empty", "rotate": 0 },
+    "right": { "image": "empty", "rotate": 0 },
+    "down": { "image": "empty", "rotate": 0 }
+  }
+}
