@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     mode: "development",
-    entry: './src/typescript/index.ts',
+    entry: './src/index.ts',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, './dist')
@@ -12,7 +12,7 @@ module.exports = {
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: [".ts", ".js"]
     },
     module: {
         rules: [

@@ -333,7 +333,7 @@ class Game {
           this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
           this.ctx.restore();
       })
-    this.drawGrid()
+    //this.drawGrid()
 
   }
 
