@@ -27,6 +27,56 @@ enum BUTTON_KEY {
 	No = 'No',
 }
 
+type TMove = {
+	sign: -1 | 1,
+	axis: 'x' | 'y',
+	normalAxis: 'x' | 'y',
+	diff: 'dx' | 'dy',
+	normalDiff: 'dx' | 'dy'
+	side: 'width' | 'height'
+	normalSide: 'width' | 'height',
+}
+
+type TDirectionMove = Record<DIRECTION, TMove>
+
+const MOVE_DIRECTION: TDirectionMove = {
+	[DIRECTION.RIGHT]: {
+		sign: 1,
+		axis: 'x',
+		normalAxis: 'y',
+		diff: 'dx',
+		normalDiff: 'dy',
+		side: 'width',
+		normalSide: 'height',
+	},
+	[DIRECTION.LEFT]: {
+		sign: -1,
+		axis: 'x',
+		normalAxis: 'y',
+		diff: 'dx',
+		normalDiff: 'dy',
+		side: 'width',
+		normalSide: 'height',
+	},
+	[DIRECTION.UP]: {
+		sign: -1,
+		axis: 'y',
+		normalAxis: 'x',
+		diff: 'dy',
+		normalDiff: 'dx',
+		side: 'height',
+		normalSide: 'width',
+	},
+	[DIRECTION.DOWN]: {
+		sign: 1,
+		axis: 'y',
+		normalAxis: 'x',
+		diff: 'dy',
+		normalDiff: 'dx',
+		side: 'height',
+		normalSide: 'width',
+	}
+}
 
 type TController = Partial<Record<BUTTON_KEY, DIRECTION>>;
 const ControllerMain: TController = {
@@ -147,165 +197,160 @@ class Game {
 			this.pressedKey = event.key;
 		}
 
-    inputProcessing() {
-      const pacman = this.objects.find(object => object.name === 'pacman');
-			if((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
-				pacman.direction = ControllerMain[this.pressedKey];
-			}
-    }
+		updateMoves(movableObjects) {
+			movableObjects.forEach(movableObject => {
+				const diff = MOVE_DIRECTION[movableObject.direction].diff;
+				let speed = Math.abs(movableObject[diff]);
 
-    update() {
-				const movableObjects = this.getMovableObjects();
-		    for(let i = 0; i < movableObjects.length; i++) {
-					const isCol = this.objects.some((object) => {
-						return this.checkCollision(movableObjects[i], object, LAYERS.WALL)
+				let isCol = false;
+				do {
+					isCol = this.objects.some((object) => {
+						return this.checkCollision(movableObject, object, LAYERS.WALL)
 					})
 
-			    if(!isCol) {
-				    this.moveObject(movableObjects[i]);
-			    }
-		    }
-
-
-	    for(let i = 0; i < movableObjects.length; i++) {
-		    const direction: DIRECTION | null = movableObjects[i]?.controller ? movableObjects[i].controller[this.pressedKey] : null;
-				if(direction) {
-					const isBlocked = this.objects.some((object) => {
-						return this.isBlocked(movableObjects[i], object, LAYERS.WALL, direction);
-					})
-					if(!isBlocked) {
-						this.inputProcessing();
+					if(!isCol) {
+						this.moveObject(movableObject);
+						this.processInput(movableObject);
 					}
 				}
-	    }
-
-        this.objects.forEach((object) => {
-						if(Number(object.currentState.tics) === 0) return;
-	          if(object.tics >= object.currentState.tics) {
-	              object.tics = 0;
-	              object.currentState = this.states[object.currentState.nextState];
-	          }
-	          object.tics++;
-        })
-    }
-
-		getMovableObjects() {
-			const movableObjects = [];
-			for(let i = 0; i < this.objects.length; i++) {
-				if(this.objects[i].dx !== 0 || this.objects[i].dy !== 0) {
-					movableObjects.push(this.objects[i]);
-				}
-			}
-			return movableObjects;
+				while (!isCol && Boolean(speed) && Boolean(--speed))
+			})
 		}
 
-		checkCollision(movableObject, object, layer) {
-			const direction = Object.values(ControllerMain).find(direction => movableObject.direction === direction);
-			if(direction) {
-				const isBlocked = this.isBlocked(movableObject, object, layer, direction);
-				return isBlocked;
+	changeDirection() {
+		const pacman = this.objects.find(object => object.name === 'pacman');
+		if((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
+			pacman.direction = ControllerMain[this.pressedKey];
+		}
+	}
+
+	processInputs(movableObjects) {
+		movableObjects.forEach(movableObject => {
+			this.processInput(movableObject);
+		})
+	}
+
+	processInput(movableObject) {
+		const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
+		if(direction) {
+			const isBlocked = this.objects.some((object) => {
+				return this.isBlocked(movableObject, object, LAYERS.WALL, direction);
+			})
+			if(!isBlocked) {
+				this.changeDirection();
 			}
 		}
+	}
 
-		isBlocked(movableObject, object, layer, direction: DIRECTION) {
-			if(object.layer !== layer) return false;
-			if(!this.needCheck(direction, movableObject, object)) return false;
-
-			switch (direction) {
-				case DIRECTION.LEFT:
-					return movableObject.x === object.x + levelData.fieldSize.width;
-				case DIRECTION.RIGHT:
-					return movableObject.x === object.x - levelData.fieldSize.width;
-				case DIRECTION.UP:
-					return movableObject.y === object.y + levelData.fieldSize.height;
-				case DIRECTION.DOWN:
-					return movableObject.y === object.y - levelData.fieldSize.height
+	updateTics() {
+		this.objects.forEach((object) => {
+			if(Number(object.currentState.tics) === 0) return;
+			if(object.tics >= object.currentState.tics) {
+				object.tics = 0;
+				object.currentState = this.states[object.currentState.nextState];
 			}
-			return false;
-		}
+			object.tics++;
+		})
+	}
 
-		needCheck(direction: DIRECTION, movableObject, object) {
-			switch (direction) {
-				case DIRECTION.LEFT:
-				case DIRECTION.RIGHT:
-						return movableObject.x % this.levelData.fieldSize.width === 0 && Math.abs(movableObject.y - object.y) < this.levelData.fieldSize.height;
-				case DIRECTION.DOWN:
-				case DIRECTION.UP:
-					return movableObject.y % this.levelData.fieldSize.height === 0 && Math.abs(movableObject.x - object.x) < this.levelData.fieldSize.width;
-			}
-		}
+  update() {
+    const movableObjects = this.getMovableObjects();
+	  this.processInputs(movableObjects);
+	  this.updateMoves(movableObjects);
+		this.updateTics();
+  }
 
-		setMove(object) {
-			const entity = this.entities[object.name];
-
-			if(object.direction === 'up') {
-				object.dx = 0;
-				object.dy = -entity.speed;
-			} else if( object.direction === 'down') {
-				object.dx = 0;
-				object.dy = +entity.speed;
-			} else if( object.direction === 'left') {
-				object.dx = -entity.speed;
-				object.dy = 0;
-			} else if(object.direction === 'right') {
-				object.dx = +entity.speed;
-				object.dy = 0;
-			} else {
-				object.dx = object.dy = 0;
+	getMovableObjects() {
+		const movableObjects = [];
+		for(let i = 0; i < this.objects.length; i++) {
+			if(this.objects[i].dx !== 0 || this.objects[i].dy !== 0) {
+				movableObjects.push(this.objects[i]);
 			}
 		}
+		return movableObjects;
+	}
 
-		moveObject(object) {
-			this.setMove(object);
-			object.x += object.dx;
-			object.y += object.dy;
+	checkCollision(movableObject, object, layer) {
+		const direction = Object.values(ControllerMain).find(direction => movableObject.direction === direction);
+		if(direction) {
+			const isBlocked = this.isBlocked(movableObject, object, layer, direction);
+			return isBlocked;
 		}
+	}
 
-    draw() {
-        const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
-        const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
-        this.ctx.fillStyle = "#000";
-        this.ctx.fillRect(0,0, levelWidth, levelHeight);
+	isBlocked(movableObject, object, layer, direction: DIRECTION) {
+		if(object.layer !== layer) return false;
+		if(!this.needCheck(direction, movableObject, object)) return false;
+		const md = MOVE_DIRECTION[direction];
+		return movableObject[md.axis] === object[md.axis] - (levelData.fieldSize[md.side] * md.sign);
+	}
 
-        this.objects.forEach((object) => {
-            const halfWidth = object.size.width / 2;
-            const halfHeight = object.size.height / 2;
-	          const sprite = this.sprites[object.currentState.sprite];
-	          const spr = sprite[object.direction];
+	needCheck(direction: DIRECTION, movableObject, object) {
+		const md = MOVE_DIRECTION[direction];
+		const isStartOfFieldByAxis = movableObject[md.axis] % this.levelData.fieldSize[md.side] <= Math.abs(movableObject[md.diff]);
+		const isInFrontOf = movableObject[md.axis] * md.sign < object[md.axis] * md.sign;
+		const isNormalIntersects = Math.abs(movableObject[md.normalAxis] - object[md.normalAxis]) < this.levelData.fieldSize[md.normalSide];
+		return isStartOfFieldByAxis && isInFrontOf && isNormalIntersects;
+	}
 
-            this.ctx.save();
-		        const offsetX = Math.floor((this.levelData.fieldSize.width - object.size.width) / 2);
-		        const offsetY = Math.floor((this.levelData.fieldSize.height - object.size.height) / 2);
-	          this.ctx.translate(object.x + offsetX , object.y + offsetY); // change origin
+	setMove(object) {
+		const entity = this.entities[object.name];
+		const moveObject = MOVE_DIRECTION[object.direction];
+		object[moveObject.normalDiff] = 0;
+		object[moveObject.diff] = entity.speed * moveObject.sign;
+	}
 
-		        if(spr.rotate > 0) {
-	            this.ctx.translate(halfWidth, halfHeight); // change origin
-	            this.ctx.rotate(spr.rotate * Math.PI / 180);
-	            this.ctx.translate(-halfWidth, -halfHeight); // change origin
-						}
+	moveObject(object) {
+		this.setMove(object);
+		object.x += 1 * Math.sign(object.dx);
+		object.y += 1 * Math.sign(object.dy);
+	}
 
-            const image = this.images[spr.image];
-            this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
-            this.ctx.restore();
-        })
-	    this.drawGrid()
+  draw() {
+      const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
+      const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
+      this.ctx.fillStyle = "#000";
+      this.ctx.fillRect(0,0, levelWidth, levelHeight);
 
-    }
+      this.objects.forEach((object) => {
+          const halfWidth = object.size.width / 2;
+          const halfHeight = object.size.height / 2;
+          const sprite = this.sprites[object.currentState.sprite];
+          const spr = sprite[object.direction];
 
-		drawGrid() {
-			this.ctx.strokeStyle = "#FFFFFF";
-			for(let w = 0; w < levelData.gridSize.width; w++) {
-				for(let h = 0; h < levelData.gridSize.height; h++) {
-					this.ctx.strokeRect(w * this.levelData.fieldSize.width, h * this.levelData.fieldSize.height, this.levelData.fieldSize.width, this.levelData.fieldSize.height);
-				}
+          this.ctx.save();
+	        const offsetX = Math.floor((this.levelData.fieldSize.width - object.size.width) / 2);
+	        const offsetY = Math.floor((this.levelData.fieldSize.height - object.size.height) / 2);
+          this.ctx.translate(object.x + offsetX , object.y + offsetY); // change origin
+
+	        if(spr.rotate > 0) {
+            this.ctx.translate(halfWidth, halfHeight); // change origin
+            this.ctx.rotate(spr.rotate * Math.PI / 180);
+            this.ctx.translate(-halfWidth, -halfHeight); // change origin
+					}
+
+          const image = this.images[spr.image];
+          this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
+          this.ctx.restore();
+      })
+    this.drawGrid()
+
+  }
+
+	drawGrid() {
+		this.ctx.strokeStyle = "#FFFFFF";
+		for(let w = 0; w < levelData.gridSize.width; w++) {
+			for(let h = 0; h < levelData.gridSize.height; h++) {
+				this.ctx.strokeRect(w * this.levelData.fieldSize.width, h * this.levelData.fieldSize.height, this.levelData.fieldSize.width, this.levelData.fieldSize.height);
 			}
 		}
+	}
 
-    step() {
-        requestAnimationFrame(this.step.bind(this));
-        this.update();
-        this.draw();
-    }
+  step() {
+      requestAnimationFrame(this.step.bind(this));
+      this.update();
+      this.draw();
+  }
 }
 
 export default Game;
