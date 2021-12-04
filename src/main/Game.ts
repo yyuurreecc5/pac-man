@@ -1,40 +1,40 @@
-import states from "../game-data/states/states.json";
-import entities from "../game-data/entities/entities.json";
-import images from "../game-data/images/images.json";
-import sprites from "../game-data/sprites/sprites.json";
-import levelData from "../game-data/game-data.json";
+import states from '../game-data/states/states.json';
+import entities from '../game-data/entities/entities.json';
+import images from '../game-data/images/images.json';
+import sprites from '../game-data/sprites/sprites.json';
+import levelData from '../game-data/game-data.json';
 
 const SCALE = 0.75;
 let flag = 0;
 
 enum LAYERS {
-  WALL = "walls",
-  EAT = "eats",
+  WALL = 'walls',
+  EAT = 'eats',
 }
 
 enum DIRECTION {
-  LEFT = "left",
-  RIGHT = "right",
-  UP = "up",
-  DOWN = "down",
+  LEFT = 'left',
+  RIGHT = 'right',
+  UP = 'up',
+  DOWN = 'down',
 }
 
 enum BUTTON_KEY {
-  ArrowRight = "ArrowRight",
-  ArrowLeft = "ArrowLeft",
-  ArrowUp = "ArrowUp",
-  ArrowDown = "ArrowDown",
-  No = "No",
+  ArrowRight = 'ArrowRight',
+  ArrowLeft = 'ArrowLeft',
+  ArrowUp = 'ArrowUp',
+  ArrowDown = 'ArrowDown',
+  No = 'No',
 }
 
 type TMove = {
   sign: -1 | 1;
-  axis: "x" | "y";
-  normalAxis: "x" | "y";
-  diff: "dx" | "dy";
-  normalDiff: "dx" | "dy";
-  side: "width" | "height";
-  normalSide: "width" | "height";
+  axis: 'x' | 'y';
+  normalAxis: 'x' | 'y';
+  diff: 'dx' | 'dy';
+  normalDiff: 'dx' | 'dy';
+  side: 'width' | 'height';
+  normalSide: 'width' | 'height';
 };
 
 type TDirectionMove = Record<DIRECTION, TMove>;
@@ -42,39 +42,39 @@ type TDirectionMove = Record<DIRECTION, TMove>;
 const MOVE_DIRECTION: TDirectionMove = {
   [DIRECTION.RIGHT]: {
     sign: 1,
-    axis: "x",
-    normalAxis: "y",
-    diff: "dx",
-    normalDiff: "dy",
-    side: "width",
-    normalSide: "height",
+    axis: 'x',
+    normalAxis: 'y',
+    diff: 'dx',
+    normalDiff: 'dy',
+    side: 'width',
+    normalSide: 'height',
   },
   [DIRECTION.LEFT]: {
     sign: -1,
-    axis: "x",
-    normalAxis: "y",
-    diff: "dx",
-    normalDiff: "dy",
-    side: "width",
-    normalSide: "height",
+    axis: 'x',
+    normalAxis: 'y',
+    diff: 'dx',
+    normalDiff: 'dy',
+    side: 'width',
+    normalSide: 'height',
   },
   [DIRECTION.UP]: {
     sign: -1,
-    axis: "y",
-    normalAxis: "x",
-    diff: "dy",
-    normalDiff: "dx",
-    side: "height",
-    normalSide: "width",
+    axis: 'y',
+    normalAxis: 'x',
+    diff: 'dy',
+    normalDiff: 'dx',
+    side: 'height',
+    normalSide: 'width',
   },
   [DIRECTION.DOWN]: {
     sign: 1,
-    axis: "y",
-    normalAxis: "x",
-    diff: "dy",
-    normalDiff: "dx",
-    side: "height",
-    normalSide: "width",
+    axis: 'y',
+    normalAxis: 'x',
+    diff: 'dy',
+    normalDiff: 'dx',
+    side: 'height',
+    normalSide: 'width',
   },
 };
 
@@ -87,14 +87,14 @@ const ControllerMain: TController = {
 };
 
 enum ENTITIES {
-  PACMAN = "pacman",
+  PACMAN = 'pacman',
 }
 
 const ControllerMap: Record<ENTITIES, TController> = {
   [ENTITIES.PACMAN]: ControllerMain,
 };
 
-class Game {
+export class Game {
   private readonly images: Object;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -108,12 +108,12 @@ class Game {
   private readonly imagesNew: any;
   private pressedKey: BUTTON_KEY;
   constructor() {
-    this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
     this.canvas.width =
       levelData.gridSize.width * levelData.fieldSize.width * SCALE;
     this.canvas.height =
       levelData.gridSize.height * levelData.fieldSize.height * SCALE;
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = this.canvas.getContext('2d');
     this.ctx.scale(SCALE, SCALE);
     this.states = states;
     this.entities = entities;
@@ -135,7 +135,7 @@ class Game {
   init() {
     this.initObjects();
 
-    document.addEventListener("keydown", (event) => {
+    document.addEventListener('keydown', (event) => {
       this.inputHandler(event);
     });
 
@@ -190,7 +190,7 @@ class Game {
   }
 
   inputHandler(event) {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       this.update();
       this.draw();
       return;
@@ -218,7 +218,7 @@ class Game {
   }
 
   changeDirection() {
-    const pacman = this.objects.find((object) => object.name === "pacman");
+    const pacman = this.objects.find((object) => object.name === 'pacman');
     if (
       (Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(
         this.pressedKey
@@ -327,7 +327,7 @@ class Game {
       this.levelData.gridSize.width * this.levelData.fieldSize.width;
     const levelHeight =
       this.levelData.gridSize.height * this.levelData.fieldSize.height;
-    this.ctx.fillStyle = "#000";
+    this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, levelWidth, levelHeight);
 
     this.objects.forEach((object) => {
@@ -359,7 +359,7 @@ class Game {
   }
 
   drawGrid() {
-    this.ctx.strokeStyle = "#FFFFFF";
+    this.ctx.strokeStyle = '#FFFFFF';
     for (let w = 0; w < levelData.gridSize.width; w++) {
       for (let h = 0; h < levelData.gridSize.height; h++) {
         this.ctx.strokeRect(
@@ -378,5 +378,3 @@ class Game {
     this.draw();
   }
 }
-
-export default Game;
