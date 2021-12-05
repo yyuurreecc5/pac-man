@@ -1,4 +1,4 @@
-export enum LAYERS {
+export enum LAYER {
   WALL = 'walls',
   EAT = 'eats',
 }

@@ -4,10 +4,12 @@ import images from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
 import levelData from 'src/game-data/game-data.json';
 import { DIRECTION } from 'src/main/Direction';
+import { TGameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
-import { LAYERS } from 'src/main/Layers';
+import { LAYER } from 'src/main/Layer';
 import { MOVE_DIRECTION } from 'src/main/Move';
 import { BUTTON_KEY, ControllerMain, ControllerMap, TController } from 'src/main/Input';
+import { getKeys } from 'src/utils/object';
 
 const SCALE = 0.75;
 
@@ -77,31 +79,32 @@ export class Game {
 
   initObjects() {
     const layers = this.levelData.layers;
-    let entries = [];
-    for (const key in layers) {
-      console.log(layers[key].entries);
+    let entries: TGameObject[] = [];
+
+    getKeys(layers).forEach((layer) => {
       entries = entries.concat(
-        layers[key].entries.map((entry) => {
+        layers[layer].entries.map((entry) => {
           const entity = this.entities[entry.name];
-          const object = {
+          const object: TGameObject = {
+            layer: layer,
             name: entry.name,
             x: entry.coordinates.x,
             y: entry.coordinates.y,
+            flipped: entry.flipped,
+            direction: entry.direction,
+            currentState: this.states[entity.initState],
+            controller: ControllerMap[entry.name] || null,
+            size: entity.size,
             dx: 0,
             dy: 0,
             tics: 0,
-            direction: entry.direction,
-            currentState: this.states[entity.initState],
-            size: entity.size,
-            layer: key,
-            controller: ControllerMap[entry.name] || null,
-            flipped: entry.flipped,
           };
           this.setMove(object);
           return object;
         })
       );
-    }
+    });
+
     this.objects = entries;
   }
 
@@ -122,7 +125,7 @@ export class Game {
       let isCol = false;
       do {
         isCol = this.objects.some((object) => {
-          return this.checkCollision(movableObject, object, LAYERS.WALL);
+          return this.checkCollision(movableObject, object, LAYER.WALL);
         });
 
         if (!isCol) {
@@ -150,7 +153,7 @@ export class Game {
     const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
     if (direction) {
       const isBlocked = this.objects.some((object) => {
-        return this.isBlocked(movableObject, object, LAYERS.WALL, direction);
+        return this.isBlocked(movableObject, object, LAYER.WALL, direction);
       });
       if (!isBlocked) {
         this.changeDirection();
