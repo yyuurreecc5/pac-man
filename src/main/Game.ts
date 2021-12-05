@@ -180,6 +180,7 @@ export class Game {
             angle: entry.angle,
             layer: key,
             controller: ControllerMap[entry.name] || null,
+            flipped: entry.flipped,
           };
           this.setMove(object);
           return object;
@@ -318,6 +319,15 @@ export class Game {
 
   moveObject(object) {
     this.setMove(object);
+    const maxXPosition =
+      this.levelData.fieldSize.width * this.levelData.gridSize.width;
+    const minXPosition = -this.levelData.fieldSize.width * 2;
+
+    if (object.x < minXPosition) {
+      object.x = maxXPosition;
+    } else if (object.x > maxXPosition) {
+      object.x = minXPosition;
+    }
     object.x += 1 * Math.sign(object.dx);
     object.y += 1 * Math.sign(object.dy);
   }
@@ -349,6 +359,11 @@ export class Game {
         this.ctx.translate(halfWidth, halfHeight); // change origin
         this.ctx.rotate((spr.rotate * Math.PI) / 180);
         this.ctx.translate(-halfWidth, -halfHeight); // change origin
+      }
+
+      if (object.flipped) {
+        this.ctx.translate(object.size.width, 0);
+        this.ctx.scale(-1, 1);
       }
 
       const image = this.images[spr.image];
