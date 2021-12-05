@@ -23,7 +23,7 @@ export class Game {
   private readonly entities: TEntities;
   private readonly sprites: object;
   private tics: number;
-  private objects: any;
+  private objects: TGameObject[];
   private levelData: TLevelData;
   private readonly imagesNew: any;
   private pressedKey: BUTTON_KEY;

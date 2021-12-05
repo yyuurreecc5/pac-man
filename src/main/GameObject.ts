@@ -1,6 +1,7 @@
 import { DIRECTION } from 'src/main/Direction';
 import { TController } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
+import { TState } from 'src/main/States';
 
 export type TGameObject = {
   name: string;
@@ -10,8 +11,11 @@ export type TGameObject = {
   dy: number;
   tics: number;
   direction: DIRECTION;
-  currentState: unknown;
-  size: number;
+  currentState: TState;
+  size: {
+    width: number;
+    height: number;
+  };
   layer: LAYER;
   controller: TController | null;
   flipped: boolean;
