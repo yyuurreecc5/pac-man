@@ -1,8 +1,10 @@
-import states from '../game-data/states/states.json';
-import entities from '../game-data/entities/entities.json';
-import images from '../game-data/images/images.json';
-import sprites from '../game-data/sprites/sprites.json';
-import levelData from '../game-data/game-data.json';
+import states from 'src/game-data/states/states.json';
+import entities from 'src/game-data/entities/entities.json';
+import images from 'src/game-data/images/images.json';
+import sprites from 'src/game-data/sprites/sprites.json';
+import levelData from 'src/game-data/game-data.json';
+import { DIRECTION } from 'src/main/Direction';
+import { TLevelData } from 'src/main/LevelData';
 
 const SCALE = 0.75;
 let flag = 0;
@@ -10,13 +12,6 @@ let flag = 0;
 enum LAYERS {
   WALL = 'walls',
   EAT = 'eats',
-}
-
-enum DIRECTION {
-  LEFT = 'left',
-  RIGHT = 'right',
-  UP = 'up',
-  DOWN = 'down',
 }
 
 enum BUTTON_KEY {
@@ -95,7 +90,7 @@ const ControllerMap: Record<ENTITIES, TController> = {
 };
 
 export class Game {
-  private readonly images: Object;
+  private readonly images: Record<string, HTMLImageElement>;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
@@ -104,7 +99,7 @@ export class Game {
   private readonly sprites: object;
   private tics: number;
   private objects: any;
-  private levelData: any;
+  private levelData: TLevelData;
   private readonly imagesNew: any;
   private pressedKey: BUTTON_KEY;
   constructor() {
@@ -138,12 +133,12 @@ export class Game {
     });
 
     const imageKeys = Object.keys(this.imagesNew);
-    const promises = imageKeys.map((imageKey) => {
+    const promises: Promise<Record<string, HTMLImageElement>>[] = imageKeys.map((imageKey) => {
       const imageSrc = require(`../game-data/images/${this.imagesNew[imageKey]}`);
       return new Promise((resolve) => {
         const image = new Image();
         image.onload = () => {
-          const result = {};
+          const result: Record<string, HTMLImageElement> = {};
           result[imageKey] = image;
           resolve(result);
         };
@@ -151,7 +146,7 @@ export class Game {
       });
     });
 
-    return Promise.all(promises).then((values: Array<HTMLImageElement>) => {
+    return Promise.all(promises).then((values) => {
       values.forEach((value) => {
         this.images[Object.keys(value)[0]] = value[Object.keys(value)[0]];
       });
@@ -162,6 +157,7 @@ export class Game {
     const layers = this.levelData.layers;
     let entries = [];
     for (const key in layers) {
+      console.log(layers[key].entries);
       entries = entries.concat(
         layers[key].entries.map((entry) => {
           const entity = this.entities[entry.name];
@@ -175,7 +171,6 @@ export class Game {
             direction: entry.direction,
             currentState: this.states[entity.initState],
             size: entity.size,
-            angle: entry.angle,
             layer: key,
             controller: ControllerMap[entry.name] || null,
             flipped: entry.flipped,
@@ -196,8 +191,6 @@ export class Game {
     }
     this.pressedKey = event.key;
   }
-
-  detectCollistion(movableObject) {}
 
   proccessCollisions(movableObjects) {
     movableObjects.forEach((movableObject) => {
@@ -268,7 +261,6 @@ export class Game {
         movableObjects.push(this.objects[i]);
       }
     }
-    console.log('test');
     return movableObjects;
   }
 

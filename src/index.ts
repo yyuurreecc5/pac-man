@@ -1,4 +1,4 @@
-import { Game } from './main/Game';
+import { Game } from 'src/main/Game';
 
 window.onload = () => {
   console.log('window onload');

@@ -12,6 +12,9 @@ module.exports = {
     contentBase: path.join(__dirname, './'),
   },
   resolve: {
+    alias: {
+      src: '/src',
+    },
     extensions: ['.ts', '.js'],
   },
   module: {
