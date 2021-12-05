@@ -109,10 +109,8 @@ export class Game {
   private pressedKey: BUTTON_KEY;
   constructor() {
     this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
-    this.canvas.width =
-      levelData.gridSize.width * levelData.fieldSize.width * SCALE;
-    this.canvas.height =
-      levelData.gridSize.height * levelData.fieldSize.height * SCALE;
+    this.canvas.width = levelData.gridSize.width * levelData.fieldSize.width * SCALE;
+    this.canvas.height = levelData.gridSize.height * levelData.fieldSize.height * SCALE;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.scale(SCALE, SCALE);
     this.states = states;
@@ -199,7 +197,9 @@ export class Game {
     this.pressedKey = event.key;
   }
 
-  updateMoves(movableObjects) {
+  detectCollistion(movableObject) {}
+
+  proccessCollisions(movableObjects) {
     movableObjects.forEach((movableObject) => {
       const diff = MOVE_DIRECTION[movableObject.direction].diff;
       let speed = Math.abs(movableObject[diff]);
@@ -220,11 +220,7 @@ export class Game {
 
   changeDirection() {
     const pacman = this.objects.find((object) => object.name === 'pacman');
-    if (
-      (Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(
-        this.pressedKey
-      )
-    ) {
+    if ((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
       pacman.direction = ControllerMain[this.pressedKey];
     }
   }
@@ -236,9 +232,7 @@ export class Game {
   }
 
   processInput(movableObject) {
-    const direction: DIRECTION | null = movableObject?.controller
-      ? movableObject.controller[this.pressedKey]
-      : null;
+    const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
     if (direction) {
       const isBlocked = this.objects.some((object) => {
         return this.isBlocked(movableObject, object, LAYERS.WALL, direction);
@@ -263,7 +257,7 @@ export class Game {
   update() {
     const movableObjects = this.getMovableObjects();
     this.processInputs(movableObjects);
-    this.updateMoves(movableObjects);
+    this.proccessCollisions(movableObjects);
     this.updateTics();
   }
 
@@ -274,13 +268,12 @@ export class Game {
         movableObjects.push(this.objects[i]);
       }
     }
+    console.log('test');
     return movableObjects;
   }
 
   checkCollision(movableObject, object, layer) {
-    const direction = Object.values(ControllerMain).find(
-      (direction) => movableObject.direction === direction
-    );
+    const direction = Object.values(ControllerMain).find((direction) => movableObject.direction === direction);
     if (direction) {
       const isBlocked = this.isBlocked(movableObject, object, layer, direction);
       return isBlocked;
@@ -291,22 +284,16 @@ export class Game {
     if (object.layer !== layer) return false;
     if (!this.needCheck(direction, movableObject, object)) return false;
     const md = MOVE_DIRECTION[direction];
-    return (
-      movableObject[md.axis] ===
-      object[md.axis] - levelData.fieldSize[md.side] * md.sign
-    );
+    return movableObject[md.axis] === object[md.axis] - levelData.fieldSize[md.side] * md.sign;
   }
 
   needCheck(direction: DIRECTION, movableObject, object) {
     const md = MOVE_DIRECTION[direction];
     const isStartOfFieldByAxis =
-      movableObject[md.axis] % this.levelData.fieldSize[md.side] <=
-      Math.abs(movableObject[md.diff]);
-    const isInFrontOf =
-      movableObject[md.axis] * md.sign < object[md.axis] * md.sign;
+      movableObject[md.axis] % this.levelData.fieldSize[md.side] <= Math.abs(movableObject[md.diff]);
+    const isInFrontOf = movableObject[md.axis] * md.sign < object[md.axis] * md.sign;
     const isNormalIntersects =
-      Math.abs(movableObject[md.normalAxis] - object[md.normalAxis]) <
-      this.levelData.fieldSize[md.normalSide];
+      Math.abs(movableObject[md.normalAxis] - object[md.normalAxis]) < this.levelData.fieldSize[md.normalSide];
     return isStartOfFieldByAxis && isInFrontOf && isNormalIntersects;
   }
 
@@ -319,8 +306,7 @@ export class Game {
 
   moveObject(object) {
     this.setMove(object);
-    const maxXPosition =
-      this.levelData.fieldSize.width * this.levelData.gridSize.width;
+    const maxXPosition = this.levelData.fieldSize.width * this.levelData.gridSize.width;
     const minXPosition = -this.levelData.fieldSize.width * 2;
 
     if (object.x < minXPosition) {
@@ -333,10 +319,8 @@ export class Game {
   }
 
   draw() {
-    const levelWidth =
-      this.levelData.gridSize.width * this.levelData.fieldSize.width;
-    const levelHeight =
-      this.levelData.gridSize.height * this.levelData.fieldSize.height;
+    const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
+    const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, levelWidth, levelHeight);
 
@@ -347,12 +331,8 @@ export class Game {
       const spr = sprite[object.direction];
 
       this.ctx.save();
-      const offsetX = Math.floor(
-        (this.levelData.fieldSize.width - object.size.width) / 2
-      );
-      const offsetY = Math.floor(
-        (this.levelData.fieldSize.height - object.size.height) / 2
-      );
+      const offsetX = Math.floor((this.levelData.fieldSize.width - object.size.width) / 2);
+      const offsetY = Math.floor((this.levelData.fieldSize.height - object.size.height) / 2);
       this.ctx.translate(object.x + offsetX, object.y + offsetY); // change origin
 
       if (spr.rotate > 0) {
