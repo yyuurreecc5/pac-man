@@ -1,5 +1,5 @@
 import { DIRECTION } from 'src/main/Direction';
-import { ENTITIES } from 'src/main/Entities';
+import { ENTITY_NAME } from 'src/main/Entity';
 
 export enum BUTTON_KEY {
   ArrowRight = 'ArrowRight',
@@ -18,6 +18,6 @@ export const ControllerMain: TController = {
   [BUTTON_KEY.ArrowUp]: DIRECTION.UP,
 };
 
-export const ControllerMap: Record<ENTITIES, TController> = {
-  [ENTITIES.PACMAN]: ControllerMain,
+export const ControllerMap: Record<ENTITY_NAME, TController> = {
+  [ENTITY_NAME.PACMAN]: ControllerMain,
 };

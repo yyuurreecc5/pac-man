@@ -4,6 +4,7 @@ import images from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
 import levelData from 'src/game-data/game-data.json';
 import { DIRECTION } from 'src/main/Direction';
+import { TEntities, TEntity } from 'src/main/Entity';
 import { TGameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
 import { LAYER } from 'src/main/Layer';
@@ -19,7 +20,7 @@ export class Game {
   private ctx: CanvasRenderingContext2D;
 
   private readonly states: object;
-  private readonly entities: object;
+  private readonly entities: TEntities;
   private readonly sprites: object;
   private tics: number;
   private objects: any;
