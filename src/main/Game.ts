@@ -5,89 +5,11 @@ import sprites from 'src/game-data/sprites/sprites.json';
 import levelData from 'src/game-data/game-data.json';
 import { DIRECTION } from 'src/main/Direction';
 import { TLevelData } from 'src/main/LevelData';
+import { LAYERS } from 'src/main/Layers';
+import { MOVE_DIRECTION } from 'src/main/Move';
+import { BUTTON_KEY, ControllerMain, ControllerMap, TController } from 'src/main/Input';
 
 const SCALE = 0.75;
-let flag = 0;
-
-enum LAYERS {
-  WALL = 'walls',
-  EAT = 'eats',
-}
-
-enum BUTTON_KEY {
-  ArrowRight = 'ArrowRight',
-  ArrowLeft = 'ArrowLeft',
-  ArrowUp = 'ArrowUp',
-  ArrowDown = 'ArrowDown',
-  No = 'No',
-}
-
-type TMove = {
-  sign: -1 | 1;
-  axis: 'x' | 'y';
-  normalAxis: 'x' | 'y';
-  diff: 'dx' | 'dy';
-  normalDiff: 'dx' | 'dy';
-  side: 'width' | 'height';
-  normalSide: 'width' | 'height';
-};
-
-type TDirectionMove = Record<DIRECTION, TMove>;
-
-const MOVE_DIRECTION: TDirectionMove = {
-  [DIRECTION.RIGHT]: {
-    sign: 1,
-    axis: 'x',
-    normalAxis: 'y',
-    diff: 'dx',
-    normalDiff: 'dy',
-    side: 'width',
-    normalSide: 'height',
-  },
-  [DIRECTION.LEFT]: {
-    sign: -1,
-    axis: 'x',
-    normalAxis: 'y',
-    diff: 'dx',
-    normalDiff: 'dy',
-    side: 'width',
-    normalSide: 'height',
-  },
-  [DIRECTION.UP]: {
-    sign: -1,
-    axis: 'y',
-    normalAxis: 'x',
-    diff: 'dy',
-    normalDiff: 'dx',
-    side: 'height',
-    normalSide: 'width',
-  },
-  [DIRECTION.DOWN]: {
-    sign: 1,
-    axis: 'y',
-    normalAxis: 'x',
-    diff: 'dy',
-    normalDiff: 'dx',
-    side: 'height',
-    normalSide: 'width',
-  },
-};
-
-type TController = Partial<Record<BUTTON_KEY, DIRECTION>>;
-const ControllerMain: TController = {
-  [BUTTON_KEY.ArrowRight]: DIRECTION.RIGHT,
-  [BUTTON_KEY.ArrowDown]: DIRECTION.DOWN,
-  [BUTTON_KEY.ArrowLeft]: DIRECTION.LEFT,
-  [BUTTON_KEY.ArrowUp]: DIRECTION.UP,
-};
-
-enum ENTITIES {
-  PACMAN = 'pacman',
-}
-
-const ControllerMap: Record<ENTITIES, TController> = {
-  [ENTITIES.PACMAN]: ControllerMain,
-};
 
 export class Game {
   private readonly images: Record<string, HTMLImageElement>;
