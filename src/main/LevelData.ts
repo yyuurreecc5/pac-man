@@ -1,4 +1,5 @@
 import { DIRECTION } from 'src/main/Direction';
+import { ENTITY_NAME } from 'src/main/Entity';
 import { LAYER } from 'src/main/Layer';
 
 export type TLevelData = {
@@ -14,7 +15,7 @@ export type TLevelData = {
     LAYER,
     {
       entries: {
-        name: string;
+        name: ENTITY_NAME;
         coordinates: { x: number; y: number };
         flipped: boolean;
         direction: DIRECTION;

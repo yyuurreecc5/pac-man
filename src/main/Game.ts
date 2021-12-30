@@ -10,6 +10,7 @@ import { TLevelData } from 'src/main/LevelData';
 import { LAYER } from 'src/main/Layer';
 import { MOVE_DIRECTION } from 'src/main/Move';
 import { BUTTON_KEY, ControllerMain, ControllerMap, TController } from 'src/main/Input';
+import { TStates } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
 
 const SCALE = 0.75;
@@ -19,7 +20,7 @@ export class Game {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
-  private readonly states: object;
+  private readonly states: TStates;
   private readonly entities: TEntities;
   private readonly sprites: object;
   private tics: number;
@@ -109,13 +110,13 @@ export class Game {
     this.objects = entries;
   }
 
-  inputHandler(event) {
+  inputHandler(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.update();
       this.draw();
       return;
     }
-    this.pressedKey = event.key;
+    this.pressedKey = event.key as BUTTON_KEY;
   }
 
   proccessCollisions(movableObjects) {
