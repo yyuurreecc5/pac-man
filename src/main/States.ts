@@ -3,4 +3,5 @@ export type TState = {
   tics: number;
   nextState: string;
 };
+
 export type TStates = Record<string, TState>;
