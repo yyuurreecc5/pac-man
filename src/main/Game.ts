@@ -60,7 +60,7 @@ export class Game {
 
     const imageKeys = Object.keys(this.imagesNew);
     const promises: Promise<Record<string, HTMLImageElement>>[] = imageKeys.map((imageKey) => {
-      const imageSrc = require(`../game-data/images/${this.imagesNew[imageKey]}`);
+      const imageSrc = require(`src/game-data/images/${this.imagesNew[imageKey]}`);
       return new Promise((resolve) => {
         const image = new Image();
         image.onload = () => {
