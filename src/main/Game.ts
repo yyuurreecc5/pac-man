@@ -1,16 +1,16 @@
-import states from 'src/game-data/states/states.json';
 import entities from 'src/game-data/entities/entities.json';
+import levelData from 'src/game-data/game-data.json';
 import images from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
-import levelData from 'src/game-data/game-data.json';
+import states from 'src/game-data/states/states.json';
 import { DIRECTION } from 'src/main/Direction';
-import { TEntities, TEntity } from 'src/main/Entity';
+import { ENTITY_NAME, TEntities } from 'src/main/Entity';
 import { TGameObject, TGameObjects } from 'src/main/GameObject';
-import { TLevelData } from 'src/main/LevelData';
+import { BUTTON_KEY, ControllerMain, ControllerMap } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
+import { TLevelData } from 'src/main/LevelData';
 import { MOVE_DIRECTION } from 'src/main/Move';
-import { BUTTON_KEY, ControllerMain, ControllerMap, TController } from 'src/main/Input';
-import { TSprite, TSprites } from 'src/main/Sprite';
+import { TSprites } from 'src/main/Sprite';
 import { TStates } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
 
@@ -125,23 +125,28 @@ export class Game {
       const diff = MOVE_DIRECTION[movableObject.direction].diff;
       let speed = Math.abs(movableObject[diff]);
 
-      let isCol = false;
+      let collisionObjectIndex: number = -1;
       do {
-        isCol = this.objects.some((object) => {
-          return this.checkCollision(movableObject, object, LAYER.WALL);
+        collisionObjectIndex = this.objects.findIndex((object) => {
+          return !!this.checkCollision(movableObject, object);
         });
-
-        if (!isCol) {
+        if (collisionObjectIndex === -1) {
+          this.moveObject(movableObject);
+          this.processInput(movableObject);
+        } else if (this.objects[collisionObjectIndex].layer !== LAYER.WALL) {
+          if (this.objects[collisionObjectIndex].layer === LAYER.EAT) {
+            this.objects.splice(collisionObjectIndex, 1);
+          }
           this.moveObject(movableObject);
           this.processInput(movableObject);
         }
-      } while (!isCol && Boolean(speed) && Boolean(--speed));
+      } while (collisionObjectIndex === -1 && Boolean(speed) && Boolean(--speed));
     });
   }
 
   changeDirection(): void {
-    const pacman = this.objects.find((object) => object.name === 'pacman');
-    if ((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
+    const pacman = this.objects.find((object) => object.name === ENTITY_NAME.PACMAN);
+    if (getKeys(ControllerMain).includes(this.pressedKey)) {
       pacman.direction = ControllerMain[this.pressedKey];
     }
   }
@@ -155,10 +160,10 @@ export class Game {
   processInput(movableObject: TGameObject): void {
     const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
     if (direction) {
-      const isBlocked = this.objects.some((object) => {
-        return this.isBlocked(movableObject, object, LAYER.WALL, direction);
+      const collisionObject = this.objects.find((object) => {
+        return this.isBlocked(movableObject, object, direction);
       });
-      if (!isBlocked) {
+      if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
         this.changeDirection();
       }
     }
@@ -192,17 +197,15 @@ export class Game {
     return movableObjects;
   }
 
-  checkCollision(movableObject: TGameObject, object: TGameObject, layer: LAYER): boolean {
+  checkCollision(movableObject: TGameObject, object: TGameObject): TGameObject | null {
     const direction = Object.values(ControllerMain).find((direction) => movableObject.direction === direction);
-    if (direction) {
-      const isBlocked = this.isBlocked(movableObject, object, layer, direction);
-      return isBlocked;
+    if (direction && this.isBlocked(movableObject, object, direction)) {
+      return object;
     }
-    return false;
+    return null;
   }
 
-  isBlocked(movableObject: TGameObject, object: TGameObject, layer: LAYER, direction: DIRECTION) {
-    if (object.layer !== layer) return false;
+  isBlocked(movableObject: TGameObject, object: TGameObject, direction: DIRECTION) {
     if (!this.needCheck(direction, movableObject, object)) return false;
     const md = MOVE_DIRECTION[direction];
     return movableObject[md.axis] === object[md.axis] - levelData.fieldSize[md.side] * md.sign;
