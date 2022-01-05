@@ -45,11 +45,10 @@ export class Game {
     this.objects = [];
   }
 
-  start() {
-    this.init().then(() => {
-      this.draw();
-      this.step();
-    });
+  async start() {
+    await this.init();
+    this.draw();
+    this.step();
   }
 
   init() {
