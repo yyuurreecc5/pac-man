@@ -1,5 +1,5 @@
 {
-  "name": "PacMan",
+  "name": "pacman",
   "version": "0.0.1",
   "description": "HTML5 PacMan game",
   "main": "index.ts",

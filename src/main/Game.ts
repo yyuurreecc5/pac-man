@@ -5,7 +5,7 @@ import sprites from 'src/game-data/sprites/sprites.json';
 import levelData from 'src/game-data/game-data.json';
 import { DIRECTION } from 'src/main/Direction';
 import { TEntities, TEntity } from 'src/main/Entity';
-import { TGameObject } from 'src/main/GameObject';
+import { TGameObject, TGameObjects } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
 import { LAYER } from 'src/main/Layer';
 import { MOVE_DIRECTION } from 'src/main/Move';
@@ -24,7 +24,7 @@ export class Game {
   private readonly entities: TEntities;
   private readonly sprites: object;
   private tics: number;
-  private objects: TGameObject[];
+  private objects: TGameObjects;
   private levelData: TLevelData;
   private readonly imagesNew: any;
   private pressedKey: BUTTON_KEY;
@@ -81,7 +81,7 @@ export class Game {
 
   initObjects() {
     const layers = this.levelData.layers;
-    let entries: TGameObject[] = [];
+    let entries: TGameObjects = [];
 
     getKeys(layers).forEach((layer) => {
       entries = entries.concat(
@@ -119,7 +119,7 @@ export class Game {
     this.pressedKey = event.key as BUTTON_KEY;
   }
 
-  proccessCollisions(movableObjects) {
+  proccessCollisions(movableObjects: TGameObjects) {
     movableObjects.forEach((movableObject) => {
       const diff = MOVE_DIRECTION[movableObject.direction].diff;
       let speed = Math.abs(movableObject[diff]);
@@ -138,20 +138,20 @@ export class Game {
     });
   }
 
-  changeDirection() {
+  changeDirection(): void {
     const pacman = this.objects.find((object) => object.name === 'pacman');
     if ((Object.keys(ControllerMain) as Array<keyof typeof BUTTON_KEY>).includes(this.pressedKey)) {
       pacman.direction = ControllerMain[this.pressedKey];
     }
   }
 
-  processInputs(movableObjects) {
+  processInputs(movableObjects: TGameObjects): void {
     movableObjects.forEach((movableObject) => {
       this.processInput(movableObject);
     });
   }
 
-  processInput(movableObject) {
+  processInput(movableObject: TGameObject): void {
     const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
     if (direction) {
       const isBlocked = this.objects.some((object) => {
@@ -181,8 +181,8 @@ export class Game {
     this.updateTics();
   }
 
-  getMovableObjects() {
-    const movableObjects = [];
+  getMovableObjects(): TGameObjects {
+    const movableObjects: TGameObjects = [];
     for (let i = 0; i < this.objects.length; i++) {
       if (this.objects[i].dx !== 0 || this.objects[i].dy !== 0) {
         movableObjects.push(this.objects[i]);
@@ -191,22 +191,23 @@ export class Game {
     return movableObjects;
   }
 
-  checkCollision(movableObject, object, layer) {
+  checkCollision(movableObject: TGameObject, object: TGameObject, layer: LAYER): boolean {
     const direction = Object.values(ControllerMain).find((direction) => movableObject.direction === direction);
     if (direction) {
       const isBlocked = this.isBlocked(movableObject, object, layer, direction);
       return isBlocked;
     }
+    return false;
   }
 
-  isBlocked(movableObject, object, layer, direction: DIRECTION) {
+  isBlocked(movableObject: TGameObject, object: TGameObject, layer: LAYER, direction: DIRECTION) {
     if (object.layer !== layer) return false;
     if (!this.needCheck(direction, movableObject, object)) return false;
     const md = MOVE_DIRECTION[direction];
     return movableObject[md.axis] === object[md.axis] - levelData.fieldSize[md.side] * md.sign;
   }
 
-  needCheck(direction: DIRECTION, movableObject, object) {
+  needCheck(direction: DIRECTION, movableObject: TGameObject, object: TGameObject) {
     const md = MOVE_DIRECTION[direction];
     const isStartOfFieldByAxis =
       movableObject[md.axis] % this.levelData.fieldSize[md.side] <= Math.abs(movableObject[md.diff]);
@@ -216,14 +217,14 @@ export class Game {
     return isStartOfFieldByAxis && isInFrontOf && isNormalIntersects;
   }
 
-  setMove(object) {
+  setMove(object: TGameObject) {
     const entity = this.entities[object.name];
     const moveObject = MOVE_DIRECTION[object.direction];
     object[moveObject.normalDiff] = 0;
     object[moveObject.diff] = entity.speed * moveObject.sign;
   }
 
-  moveObject(object) {
+  moveObject(object: TGameObject) {
     this.setMove(object);
     const maxXPosition = this.levelData.fieldSize.width * this.levelData.gridSize.width;
     const minXPosition = -this.levelData.fieldSize.width * 2;
