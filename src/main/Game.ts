@@ -10,6 +10,7 @@ import { TLevelData } from 'src/main/LevelData';
 import { LAYER } from 'src/main/Layer';
 import { MOVE_DIRECTION } from 'src/main/Move';
 import { BUTTON_KEY, ControllerMain, ControllerMap, TController } from 'src/main/Input';
+import { TSprite, TSprites } from 'src/main/Sprite';
 import { TStates } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
 
@@ -22,7 +23,7 @@ export class Game {
 
   private readonly states: TStates;
   private readonly entities: TEntities;
-  private readonly sprites: object;
+  private readonly sprites: TSprites;
   private tics: number;
   private objects: TGameObjects;
   private levelData: TLevelData;

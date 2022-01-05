@@ -1,5 +1,7 @@
+import { TSprite } from 'src/main/Sprite';
+
 export type TState = {
-  sprite: string;
+  sprite: keyof TSprite;
   tics: number;
   nextState: string;
 };
