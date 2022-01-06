@@ -47,7 +47,6 @@ export class Game {
 
   async start() {
     await this.init();
-    this.draw();
     this.step();
   }
 
@@ -143,10 +142,9 @@ export class Game {
     });
   }
 
-  changeDirection(): void {
-    const pacman = this.objects.find((object) => object.name === ENTITY_NAME.PACMAN);
-    if (getKeys(ControllerMain).includes(this.pressedKey)) {
-      pacman.direction = ControllerMain[this.pressedKey];
+  changeDirection(movableObject: TGameObject): void {
+    if (getKeys(movableObject.controller).includes(this.pressedKey)) {
+      movableObject.direction = movableObject.controller[this.pressedKey];
     }
   }
 
@@ -163,7 +161,7 @@ export class Game {
         return this.isBlocked(movableObject, object, direction);
       });
       if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
-        this.changeDirection();
+        this.changeDirection(movableObject);
       }
     }
   }
