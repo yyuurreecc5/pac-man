@@ -1,7 +1,5 @@
 import entities from 'src/game-data/entities/entities.json';
 import levelData from 'src/game-data/game-data.json';
-import images from 'src/game-data/images/images.json';
-import sprites from 'src/game-data/sprites/sprites.json';
 import states from 'src/game-data/states/states.json';
 import { DIRECTION } from 'src/main/Direction';
 import { ENTITY_NAME, TEntities } from 'src/main/Entity';
@@ -10,43 +8,30 @@ import { BUTTON_KEY, ControllerMain, ControllerMap } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
 import { TLevelData } from 'src/main/LevelData';
 import { MOVE_DIRECTION } from 'src/main/Move';
-import { TSprites } from 'src/main/Sprite';
+import { Renderer } from 'src/main/Renderer';
 import { TStates } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
 
-const SCALE = 0.75;
-
 export class Game {
-  private readonly images: Record<string, HTMLImageElement>;
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
-
   private readonly states: TStates;
   private readonly entities: TEntities;
-  private readonly sprites: TSprites;
   private tics: number;
   private objects: TGameObjects;
   private levelData: TLevelData;
-  private readonly imagesNew: any;
   private pressedKey: BUTTON_KEY;
+  private renderer: Renderer;
   constructor() {
-    this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
-    this.canvas.width = levelData.gridSize.width * levelData.fieldSize.width * SCALE;
-    this.canvas.height = levelData.gridSize.height * levelData.fieldSize.height * SCALE;
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.scale(SCALE, SCALE);
     this.states = states;
     this.entities = entities;
-    this.imagesNew = images;
-    this.sprites = sprites;
     this.levelData = levelData;
     this.pressedKey = BUTTON_KEY.ArrowLeft;
-    this.images = {};
     this.objects = [];
+    this.renderer = new Renderer();
   }
 
   async start() {
-    await this.init();
+    this.init();
+    await this.renderer.init();
     this.step();
   }
 
@@ -55,26 +40,6 @@ export class Game {
 
     document.addEventListener('keydown', (event) => {
       this.inputHandler(event);
-    });
-
-    const imageKeys = Object.keys(this.imagesNew);
-    const promises: Promise<Record<string, HTMLImageElement>>[] = imageKeys.map((imageKey) => {
-      const imageSrc = require(`src/game-data/images/${this.imagesNew[imageKey]}`);
-      return new Promise((resolve) => {
-        const image = new Image();
-        image.onload = () => {
-          const result: Record<string, HTMLImageElement> = {};
-          result[imageKey] = image;
-          resolve(result);
-        };
-        image.src = imageSrc;
-      });
-    });
-
-    return Promise.all(promises).then((values) => {
-      values.forEach((value) => {
-        this.images[Object.keys(value)[0]] = value[Object.keys(value)[0]];
-      });
     });
   }
 
@@ -115,7 +80,7 @@ export class Game {
       this.draw();
       return;
     }
-    this.pressedKey = event.key as BUTTON_KEY;
+    this.pressedKey = event.key.toLowerCase() as BUTTON_KEY;
   }
 
   proccessCollisions(movableObjects: TGameObjects) {
@@ -156,13 +121,15 @@ export class Game {
 
   processInput(movableObject: TGameObject): void {
     const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
-    if (direction) {
-      const collisionObject = this.objects.find((object) => {
-        return this.isBlocked(movableObject, object, direction);
-      });
-      if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
-        this.changeDirection(movableObject);
-      }
+    if (!direction) {
+      return;
+    }
+
+    const collisionObject = this.objects.find((object) => {
+      return this.isBlocked(movableObject, object, direction);
+    });
+    if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
+      this.changeDirection(movableObject);
     }
   }
 
@@ -240,52 +207,7 @@ export class Game {
   }
 
   draw() {
-    const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
-    const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, levelWidth, levelHeight);
-
-    this.objects.forEach((object) => {
-      const halfWidth = object.size.width / 2;
-      const halfHeight = object.size.height / 2;
-      const sprite = this.sprites[object.currentState.sprite];
-      const spr = sprite[object.direction];
-
-      this.ctx.save();
-      const offsetX = Math.floor((this.levelData.fieldSize.width - object.size.width) / 2);
-      const offsetY = Math.floor((this.levelData.fieldSize.height - object.size.height) / 2);
-      this.ctx.translate(object.x + offsetX, object.y + offsetY); // change origin
-
-      if (spr.rotate > 0) {
-        this.ctx.translate(halfWidth, halfHeight); // change origin
-        this.ctx.rotate((spr.rotate * Math.PI) / 180);
-        this.ctx.translate(-halfWidth, -halfHeight); // change origin
-      }
-
-      if (object.flipped) {
-        this.ctx.translate(object.size.width, 0);
-        this.ctx.scale(-1, 1);
-      }
-
-      const image = this.images[spr.image];
-      this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
-      this.ctx.restore();
-    });
-    //this.drawGrid()
-  }
-
-  drawGrid() {
-    this.ctx.strokeStyle = '#FFFFFF';
-    for (let w = 0; w < levelData.gridSize.width; w++) {
-      for (let h = 0; h < levelData.gridSize.height; h++) {
-        this.ctx.strokeRect(
-          w * this.levelData.fieldSize.width,
-          h * this.levelData.fieldSize.height,
-          this.levelData.fieldSize.width,
-          this.levelData.fieldSize.height
-        );
-      }
-    }
+    this.renderer.draw(this.objects);
   }
 
   step() {

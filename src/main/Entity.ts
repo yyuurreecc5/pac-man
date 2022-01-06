@@ -1,5 +1,6 @@
 export enum ENTITY_NAME {
   PACMAN = 'pacman',
+  PINKY = 'ghost',
 }
 
 export enum ENTITY_STATE {
