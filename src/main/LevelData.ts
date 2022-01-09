@@ -11,15 +11,14 @@ export type TLevelData = {
     width: number;
     height: number;
   };
-  layers: Record<
-    LAYER,
-    {
-      entries: {
-        name: ENTITY_NAME;
-        coordinates: { x: number; y: number };
-        flipped: boolean;
-        direction: DIRECTION;
-      }[];
-    }
-  >;
+  layers: Record<LAYER, { entries: TLevelDataEntries }>;
 };
+
+export type TLevelDataEntry = {
+  name: ENTITY_NAME;
+  coordinates: { x: number; y: number };
+  flipped: boolean;
+  direction: DIRECTION;
+};
+
+export type TLevelDataEntries = TLevelDataEntry[];

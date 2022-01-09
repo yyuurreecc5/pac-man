@@ -1,4 +1,4 @@
-import { TGameObjects } from 'src/main/GameObject';
+import { GameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
@@ -47,7 +47,7 @@ export class Renderer {
     });
   }
 
-  draw(objects: TGameObjects) {
+  draw(objects: GameObject[]) {
     const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
     const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
     this.ctx.fillStyle = '#000';

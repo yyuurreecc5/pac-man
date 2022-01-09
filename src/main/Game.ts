@@ -3,8 +3,9 @@ import levelData from 'src/game-data/game-data.json';
 import states from 'src/game-data/states/states.json';
 import { DIRECTION } from 'src/main/Direction';
 import { ENTITY_NAME, TEntities } from 'src/main/Entity';
-import { TGameObject, TGameObjects } from 'src/main/GameObject';
-import { BUTTON_KEY, ControllerMain, ControllerMap } from 'src/main/Input';
+import { gameLoop } from 'src/main/GameLoop';
+import { GameObject } from 'src/main/GameObject';
+import { BUTTON_KEY, ControllerMain } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
 import { TLevelData } from 'src/main/LevelData';
 import { MOVE_DIRECTION } from 'src/main/Move';
@@ -16,7 +17,7 @@ export class Game {
   private readonly states: TStates;
   private readonly entities: TEntities;
   private tics: number;
-  private objects: TGameObjects;
+  private objects: GameObject[];
   private levelData: TLevelData;
   private pressedKey: BUTTON_KEY;
   private renderer: Renderer;
@@ -45,27 +46,12 @@ export class Game {
 
   initObjects() {
     const layers = this.levelData.layers;
-    let entries: TGameObjects = [];
+    let entries: GameObject[] = [];
 
     getKeys(layers).forEach((layer) => {
       entries = entries.concat(
         layers[layer].entries.map((entry) => {
-          const entity = this.entities[entry.name];
-          const object: TGameObject = {
-            layer: layer,
-            name: entry.name,
-            x: entry.coordinates.x,
-            y: entry.coordinates.y,
-            flipped: entry.flipped,
-            direction: entry.direction,
-            currentState: this.states[entity.initState],
-            controller: ControllerMap[entry.name] || null,
-            size: entity.size,
-            dx: 0,
-            dy: 0,
-            tics: 0,
-          };
-          this.setMove(object);
+          const object = new GameObject(layer, entry);
           return object;
         })
       );
@@ -83,7 +69,7 @@ export class Game {
     this.pressedKey = event.key.toLowerCase() as BUTTON_KEY;
   }
 
-  proccessCollisions(movableObjects: TGameObjects) {
+  proccessCollisions(movableObjects: GameObject[]) {
     movableObjects.forEach((movableObject) => {
       const diff = MOVE_DIRECTION[movableObject.direction].diff;
       let speed = Math.abs(movableObject[diff]);
@@ -94,43 +80,34 @@ export class Game {
           return !!this.checkCollision(movableObject, object);
         });
         if (collisionObjectIndex === -1) {
-          this.moveObject(movableObject);
+          movableObject.move();
           this.processInput(movableObject);
         } else if (this.objects[collisionObjectIndex].layer !== LAYER.WALL) {
           if (this.objects[collisionObjectIndex].layer === LAYER.EAT) {
             this.objects.splice(collisionObjectIndex, 1);
           }
-          this.moveObject(movableObject);
+          movableObject.move();
           this.processInput(movableObject);
         }
       } while (collisionObjectIndex === -1 && Boolean(speed) && Boolean(--speed));
     });
   }
 
-  changeDirection(movableObject: TGameObject): void {
-    if (getKeys(movableObject.controller).includes(this.pressedKey)) {
-      movableObject.direction = movableObject.controller[this.pressedKey];
-    }
-  }
-
-  processInputs(movableObjects: TGameObjects): void {
+  processInputs(movableObjects: GameObject[]): void {
     movableObjects.forEach((movableObject) => {
       this.processInput(movableObject);
     });
   }
 
-  processInput(movableObject: TGameObject): void {
-    const direction: DIRECTION | null = movableObject?.controller ? movableObject.controller[this.pressedKey] : null;
-    if (!direction) {
-      return;
-    }
-
-    const collisionObject = this.objects.find((object) => {
-      return this.isBlocked(movableObject, object, direction);
+  processInput(movableObject: GameObject): void {
+    movableObject.processInput((direction: DIRECTION) => {
+      const collisionObject = this.objects.find((object) => {
+        return this.isBlocked(movableObject, object, direction);
+      });
+      if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
+        movableObject.direction = direction;
+      }
     });
-    if (!collisionObject || collisionObject.layer !== LAYER.WALL) {
-      this.changeDirection(movableObject);
-    }
   }
 
   updateTics() {
@@ -151,8 +128,8 @@ export class Game {
     this.updateTics();
   }
 
-  getMovableObjects(): TGameObjects {
-    const movableObjects: TGameObjects = [];
+  getMovableObjects(): GameObject[] {
+    const movableObjects: GameObject[] = [];
     for (let i = 0; i < this.objects.length; i++) {
       if (this.objects[i].dx !== 0 || this.objects[i].dy !== 0) {
         movableObjects.push(this.objects[i]);
@@ -161,7 +138,7 @@ export class Game {
     return movableObjects;
   }
 
-  checkCollision(movableObject: TGameObject, object: TGameObject): TGameObject | null {
+  checkCollision(movableObject: GameObject, object: GameObject): GameObject | null {
     const direction = Object.values(ControllerMain).find((direction) => movableObject.direction === direction);
     if (direction && this.isBlocked(movableObject, object, direction)) {
       return object;
@@ -169,13 +146,13 @@ export class Game {
     return null;
   }
 
-  isBlocked(movableObject: TGameObject, object: TGameObject, direction: DIRECTION) {
+  isBlocked(movableObject: GameObject, object: GameObject, direction: DIRECTION) {
     if (!this.needCheck(direction, movableObject, object)) return false;
     const md = MOVE_DIRECTION[direction];
     return movableObject[md.axis] === object[md.axis] - levelData.fieldSize[md.side] * md.sign;
   }
 
-  needCheck(direction: DIRECTION, movableObject: TGameObject, object: TGameObject) {
+  needCheck(direction: DIRECTION, movableObject: GameObject, object: GameObject) {
     const md = MOVE_DIRECTION[direction];
     const isStartOfFieldByAxis =
       movableObject[md.axis] % this.levelData.fieldSize[md.side] <= Math.abs(movableObject[md.diff]);
@@ -185,34 +162,11 @@ export class Game {
     return isStartOfFieldByAxis && isInFrontOf && isNormalIntersects;
   }
 
-  setMove(object: TGameObject) {
-    const entity = this.entities[object.name];
-    const moveObject = MOVE_DIRECTION[object.direction];
-    object[moveObject.normalDiff] = 0;
-    object[moveObject.diff] = entity.speed * moveObject.sign;
-  }
-
-  moveObject(object: TGameObject) {
-    this.setMove(object);
-    const maxXPosition = this.levelData.fieldSize.width * this.levelData.gridSize.width;
-    const minXPosition = -this.levelData.fieldSize.width * 2;
-
-    if (object.x < minXPosition) {
-      object.x = maxXPosition;
-    } else if (object.x > maxXPosition) {
-      object.x = minXPosition;
-    }
-    object.x += 1 * Math.sign(object.dx);
-    object.y += 1 * Math.sign(object.dy);
-  }
-
   draw() {
     this.renderer.draw(this.objects);
   }
 
   step() {
-    requestAnimationFrame(this.step.bind(this));
-    this.update();
-    this.draw();
+    gameLoop(this.draw.bind(this), this.update.bind(this));
   }
 }
