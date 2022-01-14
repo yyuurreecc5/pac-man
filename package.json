@@ -6,7 +6,7 @@
   "author": "Yuriy Kiselev",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && cp index.html dist/index.html",
     "dev": "webpack --watch",
     "start": "webpack --watch & webpack-dev-server --open"
   },
