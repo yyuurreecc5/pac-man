@@ -1,6 +1,7 @@
 import entities from 'src/game-data/entities/entities.json';
 import levelData from 'src/game-data/game-data.json';
 import states from 'src/game-data/states/states.json';
+import { Audio } from 'src/main/audio/audio';
 import { DIRECTION } from 'src/main/Direction';
 import { ENTITY_NAME, TEntities } from 'src/main/Entity';
 import { gameLoop } from 'src/main/GameLoop';
@@ -9,9 +10,10 @@ import { BUTTON_KEY, ControllerMain } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
 import { TLevelData } from 'src/main/LevelData';
 import { MOVE_DIRECTION } from 'src/main/Move';
-import { Renderer } from 'src/main/Renderer';
+import { GameRenderer } from 'src/main/render/GameRenderer';
 import { TStates } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
+import './audio/audio';
 
 export class Game {
   private readonly states: TStates;
@@ -20,19 +22,20 @@ export class Game {
   private objects: GameObject[];
   private levelData: TLevelData;
   private pressedKey: BUTTON_KEY;
-  private renderer: Renderer;
+  private renderer: GameRenderer;
   constructor() {
     this.states = states;
     this.entities = entities;
     this.levelData = levelData;
     this.pressedKey = BUTTON_KEY.ArrowLeft;
     this.objects = [];
-    this.renderer = new Renderer();
+    this.renderer = new GameRenderer();
   }
 
   async start() {
     this.init();
     await this.renderer.init();
+    this.renderer;
     this.step();
   }
 
@@ -41,6 +44,12 @@ export class Game {
 
     document.addEventListener('keydown', (event) => {
       this.inputHandler(event);
+    });
+
+    Audio.getFile('/assets/audio/start.mp3').then((buffer) => {
+      console.log(buffer);
+      const track = Audio.playTrack(buffer);
+      console.log(track);
     });
   }
 

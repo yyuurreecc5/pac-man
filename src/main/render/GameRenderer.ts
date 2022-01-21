@@ -3,11 +3,18 @@ import { TLevelData } from 'src/main/LevelData';
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
+import { TextRenderer } from 'src/main/render/TextRenderer';
 import { TSprites } from 'src/main/Sprite';
 
-const SCALE = 0.75;
+const SIDE_BAR_WIDTH = 400;
+const DEBUG = false;
 
-export class Renderer {
+export enum Color {
+  RED = '#9C1000',
+  WHITE = '#FFFFFF',
+}
+
+export class GameRenderer {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly levelData: TLevelData = levelData;
@@ -15,14 +22,17 @@ export class Renderer {
   private readonly images: Record<string, HTMLImageElement> = {};
   private readonly sprites: TSprites;
   private readonly imagesNew;
+  private readonly debug = DEBUG;
+  private readonly textRenderer: TextRenderer;
   constructor() {
     this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
-    this.canvas.width = this.levelData.gridSize.width * levelData.fieldSize.width * SCALE;
-    this.canvas.height = this.levelData.gridSize.height * levelData.fieldSize.height * SCALE;
+    this.canvas.width = (this.levelData.gridSize.width * levelData.fieldSize.width + SIDE_BAR_WIDTH) * this.scale;
+    this.canvas.height = this.levelData.gridSize.height * levelData.fieldSize.height * this.scale;
     this.ctx = this.canvas.getContext('2d');
     this.ctx.scale(this.scale, this.scale);
     this.sprites = sprites;
     this.imagesNew = imagesNew;
+    this.textRenderer = new TextRenderer(this.ctx, this.levelData);
   }
 
   async init() {
@@ -40,19 +50,35 @@ export class Renderer {
       });
     });
 
-    return Promise.all(promises).then((values) => {
+    await Promise.all(promises).then((values) => {
       values.forEach((value) => {
         this.images[Object.keys(value)[0]] = value[Object.keys(value)[0]];
       });
     });
+
+    await this.textRenderer.init();
   }
 
   draw(objects: GameObject[]) {
-    const levelWidth = this.levelData.gridSize.width * this.levelData.fieldSize.width;
-    const levelHeight = this.levelData.gridSize.height * this.levelData.fieldSize.height;
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, levelWidth, levelHeight);
+    this.clearScreen();
+    this.drawScene(objects);
+    this.drawSidebar();
+    if (this.debug) {
+      this.drawGrid();
+    }
+  }
 
+  clearScreen() {
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(
+      0,
+      0,
+      this.levelData.fieldSize.width * this.levelData.gridSize.width + SIDE_BAR_WIDTH,
+      this.levelData.fieldSize.height * this.levelData.gridSize.height
+    );
+  }
+
+  drawScene(objects: GameObject[]) {
     objects.forEach((object) => {
       const halfWidth = object.size.width / 2;
       const halfHeight = object.size.height / 2;
@@ -79,7 +105,6 @@ export class Renderer {
       this.ctx.drawImage(image, 0, 0, object.size.width, object.size.height);
       this.ctx.restore();
     });
-    //this.drawGrid()
   }
 
   drawGrid() {
@@ -94,5 +119,12 @@ export class Renderer {
         );
       }
     }
+  }
+
+  drawSidebar() {
+    this.ctx.strokeStyle = 'yellow';
+    this.ctx.fill();
+    this.textRenderer.drawText('hi score', this.levelData.gridSize.width, 2);
+    this.textRenderer.drawNumber(789000, this.levelData.gridSize.width, 4);
   }
 }
