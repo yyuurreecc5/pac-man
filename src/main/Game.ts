@@ -35,7 +35,6 @@ export class Game {
   async start() {
     this.init();
     await this.renderer.init();
-    this.renderer;
     this.step();
   }
 

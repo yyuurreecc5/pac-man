@@ -1,6 +1,20 @@
 import src from 'src/game-data/text.png';
 import { TLevelData } from 'src/main/LevelData';
 
+const signs = ['-', '.', '>', '@', '!'] as const;
+type TSign = typeof signs[number];
+
+function isSign(char: string): char is TSign {
+  return signs.includes(char as TSign);
+}
+
+const CHAR_WIDTH = 33;
+const CHAR_HEIGHT = 30;
+enum Align {
+  RIGHT = 'right',
+  LEFT = 'left',
+}
+
 export class TextRenderer {
   private ctx: CanvasRenderingContext2D;
   private readonly spriteSheet: HTMLImageElement;
@@ -25,14 +39,22 @@ export class TextRenderer {
     });
   }
 
-  public drawNumber(n: number, x: number, y: number) {
-    const stringNumber = String(n);
-    for (let i = 0; i < stringNumber.length; i++) {
-      this.drawDigit(Number(stringNumber[i]), x, y, i);
+  draw(text: string | number, x: number, y: number, align: Align = Align.LEFT): void {
+    text = String(text);
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+
+      if (isSign(char)) {
+        this.drawSign(char, x, y, i);
+      } else if (Number.isNaN(parseInt(char))) {
+        this.drawChar(char, x, y, i);
+      } else {
+        this.drawDigit(Number(char), x, y, i);
+      }
     }
   }
 
-  public drawChar(char: string, x: number, y: number, index: number) {
+  private drawChar(char: string, x: number, y: number, index: number) {
     const sourceX = 15;
     const sourceY = 505;
     const sourceHeight = 60;
@@ -42,9 +64,7 @@ export class TextRenderer {
     const indexOfChar = chars.indexOf(char);
     if (indexOfChar === -1) return;
 
-    const destWidth = sourceWidth / 2;
-    const destHeight = sourceHeight / 2;
-    const destX = x * this.levelData.fieldSize.width + index * destWidth;
+    const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
     const destY = y * this.levelData.fieldSize.height;
 
     this.ctx.drawImage(
@@ -53,40 +73,59 @@ export class TextRenderer {
       sourceY,
       sourceWidth,
       sourceHeight,
-      destX - index * 3,
+      destX,
       destY,
-      destWidth,
-      destHeight
+      CHAR_WIDTH,
+      CHAR_HEIGHT
     );
-  }
-
-  public drawText(text: string, x: number, y: number) {
-    for (let i = 0; i < text.length; i++) {
-      this.drawChar(text[i], x, y, i);
-    }
   }
 
   private drawDigit(n: number, x: number, y: number, index: number) {
     const sourceX = 15;
-    const sourceY = 405;
-    const sourceHeight = 55;
+    const sourceY = 400;
+    const sourceHeight = 60;
     const sourceWidth = 66;
 
-    const destWidth = sourceWidth / 2;
-    const destHeight = sourceHeight / 2;
-    const destX = x * this.levelData.fieldSize.width + index * destWidth;
+    const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
     const destY = y * this.levelData.fieldSize.height;
-
     this.ctx.drawImage(
       this.spriteSheet,
       sourceX + n * sourceWidth,
       sourceY,
       sourceWidth,
       sourceHeight,
-      destX - index * 3,
+      destX,
       destY,
-      destWidth,
-      destHeight
+      CHAR_WIDTH,
+      CHAR_HEIGHT
+    );
+  }
+
+  public drawSign(n: TSign, x: number, y: number, index: number) {
+    const sourceY = 400;
+    const sourceHeight = 60;
+    const sourceWidth = 66;
+
+    const signMap: Record<TSign, number> = {
+      '-': 675,
+      '.': 730,
+      '>': 800,
+      '@': 890,
+      '!': 955,
+    };
+
+    const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
+    const destY = y * this.levelData.fieldSize.height;
+    this.ctx.drawImage(
+      this.spriteSheet,
+      signMap[n],
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      destX,
+      destY,
+      CHAR_WIDTH,
+      CHAR_HEIGHT
     );
   }
 }

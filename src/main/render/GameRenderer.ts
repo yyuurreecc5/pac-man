@@ -124,7 +124,7 @@ export class GameRenderer {
   drawSidebar() {
     this.ctx.strokeStyle = 'yellow';
     this.ctx.fill();
-    this.textRenderer.drawText('hi score', this.levelData.gridSize.width, 2);
-    this.textRenderer.drawNumber(789000, this.levelData.gridSize.width, 4);
+    this.textRenderer.draw('hi-score', this.levelData.gridSize.width, 1);
+    this.textRenderer.draw('10000', this.levelData.gridSize.width, 3);
   }
 }
