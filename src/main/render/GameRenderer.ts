@@ -3,10 +3,11 @@ import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
 import { GameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
+import { StartScreenRenderer } from 'src/main/render/StartScreenRenderer';
 import { Align, Color, TextRenderer } from 'src/main/render/TextRenderer';
 import { TSprites } from 'src/main/Sprite';
 
-const SIDE_BAR_WIDTH = 400;
+export const SIDE_BAR_WIDTH = 400;
 const DEBUG = false;
 
 export class GameRenderer {
@@ -19,6 +20,8 @@ export class GameRenderer {
   private readonly imagesNew;
   private readonly debug = DEBUG;
   private readonly textRenderer: TextRenderer;
+  private readonly startScreenRenderer: StartScreenRenderer;
+
   constructor() {
     this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
     this.canvas.width = (this.levelData.gridSize.width * levelData.fieldSize.width + SIDE_BAR_WIDTH) * this.scale;
@@ -28,6 +31,7 @@ export class GameRenderer {
     this.sprites = sprites;
     this.imagesNew = imagesNew;
     this.textRenderer = new TextRenderer(this.ctx, this.levelData);
+    this.startScreenRenderer = new StartScreenRenderer(this.ctx, this.levelData, this.textRenderer);
   }
 
   async init() {
@@ -52,14 +56,20 @@ export class GameRenderer {
     });
 
     await this.textRenderer.init();
+    await this.startScreenRenderer.init();
   }
 
   draw(objects: GameObject[]) {
     this.clearScreen();
-    this.drawScene(objects);
-    this.drawSidebar();
-    if (this.debug) {
-      this.drawGrid();
+
+    if (true) {
+      this.drawStartScreen();
+    } else {
+      this.drawScene(objects);
+      this.drawSidebar();
+      if (this.debug) {
+        this.drawGrid();
+      }
     }
   }
 
@@ -121,5 +131,9 @@ export class GameRenderer {
     this.textRenderer.draw('10000', this.levelData.gridSize.width + 6, 3, { align: Align.RIGHT });
     this.textRenderer.draw('1up', this.levelData.gridSize.width + 1, 5, { color: Color.RED });
     this.textRenderer.draw('3470', this.levelData.gridSize.width + 6, 7, { align: Align.RIGHT });
+  }
+
+  private drawStartScreen() {
+    this.startScreenRenderer.draw();
   }
 }

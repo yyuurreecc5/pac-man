@@ -46,7 +46,6 @@ export class TextRenderer {
   draw(text: string | number, x: number, y: number, setting?: TTextSetting): void {
     const textString = String(text);
     const align = setting?.align ? setting.align : Align.LEFT;
-
     for (let i = 0, j = 0 - textString.length + 1; i < textString.length; i++, j++) {
       const index = align === Align.LEFT ? i : j;
       this.drawChar(textString[i], x, y, index, setting?.color);
@@ -94,7 +93,7 @@ export class TextRenderer {
       sourceY,
       sourceWidth,
       sourceHeight,
-      destX + index,
+      destX,
       destY,
       CHAR_WIDTH,
       CHAR_HEIGHT
