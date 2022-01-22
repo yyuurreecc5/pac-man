@@ -1,18 +1,13 @@
-import { GameObject } from 'src/main/GameObject';
-import { TLevelData } from 'src/main/LevelData';
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
-import { Align, TextRenderer } from 'src/main/render/TextRenderer';
+import { GameObject } from 'src/main/GameObject';
+import { TLevelData } from 'src/main/LevelData';
+import { Align, Color, TextRenderer } from 'src/main/render/TextRenderer';
 import { TSprites } from 'src/main/Sprite';
 
 const SIDE_BAR_WIDTH = 400;
 const DEBUG = false;
-
-export enum Color {
-  RED = '#9C1000',
-  WHITE = '#FFFFFF',
-}
 
 export class GameRenderer {
   private readonly canvas: HTMLCanvasElement;
@@ -122,11 +117,9 @@ export class GameRenderer {
   }
 
   drawSidebar() {
-    this.ctx.strokeStyle = 'yellow';
-    this.ctx.fill();
-    this.textRenderer.draw('hi-score', this.levelData.gridSize.width, 1);
-    this.textRenderer.draw('10000', this.levelData.gridSize.width + 6, 3, Align.RIGHT);
-    this.textRenderer.draw('1up', this.levelData.gridSize.width + 1, 5);
-    this.textRenderer.draw('3470', this.levelData.gridSize.width + 6, 7, Align.RIGHT);
+    this.textRenderer.draw('hi-score', this.levelData.gridSize.width, 1, { color: Color.RED });
+    this.textRenderer.draw('10000', this.levelData.gridSize.width + 6, 3, { align: Align.RIGHT });
+    this.textRenderer.draw('1up', this.levelData.gridSize.width + 1, 5, { color: Color.RED });
+    this.textRenderer.draw('3470', this.levelData.gridSize.width + 6, 7, { align: Align.RIGHT });
   }
 }

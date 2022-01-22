@@ -1,15 +1,20 @@
 import src from 'src/game-data/text.png';
 import { TLevelData } from 'src/main/LevelData';
 
-const signs = ['-', '.', '>', '@', '!'] as const;
-type TSign = typeof signs[number];
-
-function isSign(char: string): char is TSign {
-  return signs.includes(char as TSign);
+export enum Color {
+  RED = 'red',
+  WHITE = 'white',
 }
 
-const CHAR_WIDTH = 33;
-const CHAR_HEIGHT = 30;
+type TTextSetting = {
+  align?: Align;
+  color?: Color;
+};
+
+type TColorShiftMap = Record<Color, { x: number; y: number }>;
+
+export const CHAR_WIDTH = 33;
+export const CHAR_HEIGHT = 30;
 export enum Align {
   RIGHT = 'right',
   LEFT = 'left',
@@ -26,7 +31,6 @@ export class TextRenderer {
     this.levelData = levelData;
     this.spriteSheet = new Image();
     this.src = src;
-    console.log(src);
   }
 
   async init(): Promise<boolean> {
@@ -39,91 +43,58 @@ export class TextRenderer {
     });
   }
 
-  draw(text: string | number, x: number, y: number, align: Align = Align.LEFT): void {
-    text = String(text);
+  draw(text: string | number, x: number, y: number, setting?: TTextSetting): void {
+    const textString = String(text);
+    const align = setting?.align ? setting.align : Align.LEFT;
 
-    for (let i = 0, j = 0 - text.length + 1; i < text.length; i++, j++) {
-      const char = text[i];
+    for (let i = 0, j = 0 - textString.length + 1; i < textString.length; i++, j++) {
       const index = align === Align.LEFT ? i : j;
-      if (isSign(char)) {
-        this.drawSign(char, x, y, index);
-      } else if (Number.isNaN(parseInt(char))) {
-        this.drawChar(char, x, y, index);
-      } else {
-        this.drawDigit(Number(char), x, y, index);
-      }
+      this.drawChar(textString[i], x, y, index, setting?.color);
     }
   }
 
-  private drawChar(char: string, x: number, y: number, index: number) {
-    const sourceX = 15;
-    const sourceY = 505;
-    const sourceHeight = 60;
-    const sourceWidth = 67;
+  private drawChar(char: string, x: number, y: number, index: number, color: Color = Color.WHITE) {
+    const charsArray = ['abcdefghijklmno', 'pqrstuvwxyz!@', '0123456789/-"'];
+    let xIndex = -1;
+    let yIndex = -1;
+    for (let i = 0; i < charsArray.length; i++) {
+      const chars = charsArray[i];
+      xIndex = chars.indexOf(char);
+      if (xIndex !== -1) {
+        yIndex = i;
+        break;
+      }
+    }
+    if (xIndex === -1) return;
 
-    const chars = 'abcdefghiklmnoprstuvy';
-    const indexOfChar = chars.indexOf(char);
-    if (indexOfChar === -1) return;
-
-    const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
-    const destY = y * this.levelData.fieldSize.height;
-
-    this.ctx.drawImage(
-      this.spriteSheet,
-      sourceX + indexOfChar * sourceWidth,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
-      destX,
-      destY,
-      CHAR_WIDTH,
-      CHAR_HEIGHT
-    );
-  }
-
-  private drawDigit(n: number, x: number, y: number, index: number) {
-    const sourceX = 15;
-    const sourceY = 400;
-    const sourceHeight = 60;
-    const sourceWidth = 66;
-
-    const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
-    const destY = y * this.levelData.fieldSize.height;
-    this.ctx.drawImage(
-      this.spriteSheet,
-      sourceX + n * sourceWidth,
-      sourceY,
-      sourceWidth,
-      sourceHeight,
-      destX,
-      destY,
-      CHAR_WIDTH,
-      CHAR_HEIGHT
-    );
-  }
-
-  public drawSign(n: TSign, x: number, y: number, index: number) {
-    const sourceY = 400;
-    const sourceHeight = 60;
-    const sourceWidth = 66;
-
-    const signMap: Record<TSign, number> = {
-      '-': 675,
-      '.': 730,
-      '>': 800,
-      '@': 890,
-      '!': 955,
+    const sourceHeight = 110;
+    const sourceWidth = 108;
+    const colorShiftMap: TColorShiftMap = {
+      [Color.WHITE]: {
+        x: 0,
+        y: 0,
+      },
+      [Color.RED]: {
+        x: 1650,
+        y: 0,
+      },
     };
-
+    let sourceX = xIndex * sourceWidth + colorShiftMap[color].x;
+    if (char === '!') {
+      sourceX -= 7;
+    } else if (char === '@') {
+      sourceX -= 10;
+    }
+    const sourceY = yIndex * sourceHeight + 5 + colorShiftMap[color].y;
     const destX = x * this.levelData.fieldSize.width + index * CHAR_WIDTH;
     const destY = y * this.levelData.fieldSize.height;
     this.ctx.drawImage(
       this.spriteSheet,
-      signMap[n],
+      sourceX,
       sourceY,
       sourceWidth,
       sourceHeight,
-      destX,
+      destX + index,
       destY,
       CHAR_WIDTH,
       CHAR_HEIGHT
