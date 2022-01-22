@@ -3,7 +3,7 @@ import { TLevelData } from 'src/main/LevelData';
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
-import { TextRenderer } from 'src/main/render/TextRenderer';
+import { Align, TextRenderer } from 'src/main/render/TextRenderer';
 import { TSprites } from 'src/main/Sprite';
 
 const SIDE_BAR_WIDTH = 400;
@@ -125,6 +125,8 @@ export class GameRenderer {
     this.ctx.strokeStyle = 'yellow';
     this.ctx.fill();
     this.textRenderer.draw('hi-score', this.levelData.gridSize.width, 1);
-    this.textRenderer.draw('10000', this.levelData.gridSize.width, 3);
+    this.textRenderer.draw('10000', this.levelData.gridSize.width + 6, 3, Align.RIGHT);
+    this.textRenderer.draw('1up', this.levelData.gridSize.width + 1, 5);
+    this.textRenderer.draw('3470', this.levelData.gridSize.width + 6, 7, Align.RIGHT);
   }
 }

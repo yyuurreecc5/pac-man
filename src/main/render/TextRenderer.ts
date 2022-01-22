@@ -10,7 +10,7 @@ function isSign(char: string): char is TSign {
 
 const CHAR_WIDTH = 33;
 const CHAR_HEIGHT = 30;
-enum Align {
+export enum Align {
   RIGHT = 'right',
   LEFT = 'left',
 }
@@ -41,15 +41,16 @@ export class TextRenderer {
 
   draw(text: string | number, x: number, y: number, align: Align = Align.LEFT): void {
     text = String(text);
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i];
 
+    for (let i = 0, j = 0 - text.length + 1; i < text.length; i++, j++) {
+      const char = text[i];
+      const index = align === Align.LEFT ? i : j;
       if (isSign(char)) {
-        this.drawSign(char, x, y, i);
+        this.drawSign(char, x, y, index);
       } else if (Number.isNaN(parseInt(char))) {
-        this.drawChar(char, x, y, i);
+        this.drawChar(char, x, y, index);
       } else {
-        this.drawDigit(Number(char), x, y, i);
+        this.drawDigit(Number(char), x, y, index);
       }
     }
   }
