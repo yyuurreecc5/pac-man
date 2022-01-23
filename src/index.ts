@@ -1,6 +1,6 @@
 import { Game } from 'src/main/Game';
 
-window.onclick = () => {
+window.onload = () => {
   const game = new Game();
   void game.start();
 };

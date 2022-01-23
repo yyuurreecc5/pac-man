@@ -99,4 +99,15 @@ export class TextRenderer {
       CHAR_HEIGHT
     );
   }
+
+  drawNamcoLogo(x: number, y: number) {
+    const sWidth = 700;
+    const sHeight = 110;
+    const sRatio = sHeight / sWidth;
+
+    const dWidth = 200;
+    const destX = x * this.levelData.fieldSize.width;
+    const destY = y * this.levelData.fieldSize.height;
+    this.ctx.drawImage(this.spriteSheet, 1650, 340, sWidth, sHeight, destX, destY, dWidth, dWidth * sRatio);
+  }
 }

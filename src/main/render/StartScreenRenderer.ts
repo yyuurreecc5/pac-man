@@ -30,15 +30,21 @@ export class StartScreenRenderer {
   draw() {
     const x = SIDE_BAR_WIDTH / 2;
     this.textRenderer.draw('1up', 6, 2, { color: Color.RED });
-    this.textRenderer.draw('hi-score', 16, 2, { color: Color.RED });
+    this.textRenderer.draw('hi-score', 15, 2, { color: Color.RED });
     this.textRenderer.draw('2up', 28, 2, { color: Color.RED });
     this.textRenderer.draw('00', 10, 3, { align: Align.RIGHT });
-    this.textRenderer.draw('10000', 18, 3);
+    this.textRenderer.draw('10000', 17, 3);
     this.textRenderer.draw('1000', 33, 3, { align: Align.RIGHT });
-    this.textRenderer.draw('-', 15, 17);
-    this.textRenderer.draw('1 player', 16, 17);
-    this.textRenderer.draw('2 players', 16, 19);
+    this.textRenderer.draw('-', 14, 17);
+    this.drawLogo();
+    this.textRenderer.draw('1 player', 15, 17);
+    this.textRenderer.draw('2 players', 15, 19);
+    this.textRenderer.drawNamcoLogo(17, 22);
+    this.textRenderer.draw('@ 1980 1984 namco ltd', 9, 25);
+    this.textRenderer.draw('all rights reserved', 10, 27);
+  }
 
+  private drawLogo() {
     const ratio = this.image.naturalHeight / this.image.naturalWidth;
     const width = this.levelData.gridSize.width * this.levelData.fieldSize.width;
     this.ctx.drawImage(

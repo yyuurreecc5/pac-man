@@ -45,11 +45,9 @@ export class Game {
       this.inputHandler(event);
     });
 
-    Audio.getFile('/assets/audio/start.mp3').then((buffer) => {
-      console.log(buffer);
-      const track = Audio.playTrack(buffer);
-      console.log(track);
-    });
+    // Audio.getFile('/assets/audio/start.mp3').then((buffer) => {
+    //   const track = Audio.playTrack(buffer);
+    // });
   }
 
   initObjects() {
@@ -130,10 +128,13 @@ export class Game {
   }
 
   update() {
-    const movableObjects = this.getMovableObjects();
-    this.processInputs(movableObjects);
-    this.proccessCollisions(movableObjects);
-    this.updateTics();
+    if (true) {
+    } else {
+      const movableObjects = this.getMovableObjects();
+      this.processInputs(movableObjects);
+      this.proccessCollisions(movableObjects);
+      this.updateTics();
+    }
   }
 
   getMovableObjects(): GameObject[] {
