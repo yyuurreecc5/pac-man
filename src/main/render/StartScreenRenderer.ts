@@ -1,9 +1,21 @@
 import src from 'src/game-data/logo.png';
-import { TLevelData } from 'src/main/LevelData';
+import { startLevel } from 'src/main/Game';
+import { levelData, TLevelData } from 'src/main/LevelData';
 import { SIDE_BAR_WIDTH } from 'src/main/render/GameRenderer';
 import { Align, Color, TextRenderer } from 'src/main/render/TextRenderer';
 
 const SCROLL_SPEED = 3;
+
+let topCoordinate = levelData.gridSize.height * levelData.fieldSize.height;
+export function startScreenResponder(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    if (topCoordinate !== 0) {
+      topCoordinate = 0;
+    } else {
+      void startLevel();
+    }
+  }
+}
 
 export class StartScreenRenderer {
   private ctx: CanvasRenderingContext2D;
@@ -11,24 +23,16 @@ export class StartScreenRenderer {
   private readonly src: string;
   private readonly levelData: TLevelData;
   private readonly textRenderer: TextRenderer;
-  private topCoordinate: number;
   constructor(ctx: CanvasRenderingContext2D, levelData: TLevelData, textRenderer: TextRenderer) {
     this.ctx = ctx;
     this.levelData = levelData;
     this.image = new Image();
     this.src = src;
     this.textRenderer = textRenderer;
-    this.topCoordinate = this.levelData.gridSize.height * this.levelData.fieldSize.height;
   }
 
   async init(): Promise<boolean> {
     this.image.src = this.src;
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        this.topCoordinate = 0;
-      }
-    });
 
     return new Promise((resolve) => {
       this.image.onload = () => {
@@ -38,7 +42,7 @@ export class StartScreenRenderer {
   }
 
   draw() {
-    if (this.topCoordinate === 0) {
+    if (topCoordinate === 0) {
       this.staticDraw();
     } else {
       this.scrollDraw();
@@ -63,9 +67,9 @@ export class StartScreenRenderer {
 
   private scrollDraw() {
     this.ctx.save();
-    const newCoordinate = this.topCoordinate - SCROLL_SPEED;
-    this.topCoordinate = Math.max(newCoordinate, 0);
-    this.ctx.translate(0, this.topCoordinate);
+    const newCoordinate = topCoordinate - SCROLL_SPEED;
+    topCoordinate = Math.max(newCoordinate, 0);
+    this.ctx.translate(0, topCoordinate);
     this.staticDraw();
     this.ctx.restore();
   }

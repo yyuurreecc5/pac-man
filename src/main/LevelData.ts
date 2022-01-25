@@ -1,6 +1,8 @@
+import levelDataJson from 'src/game-data/game-data.json';
 import { DIRECTION } from 'src/main/Direction';
 import { ENTITY_NAME } from 'src/main/Entity';
 import { LAYER } from 'src/main/Layer';
+import { DeepReadonly } from 'src/utils/types';
 
 export type TLevelData = {
   gridSize: {
@@ -22,3 +24,5 @@ export type TLevelDataEntry = {
 };
 
 export type TLevelDataEntries = TLevelDataEntry[];
+
+export const levelData: DeepReadonly<TLevelData> = levelDataJson;

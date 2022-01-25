@@ -1,6 +1,7 @@
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
+import { Gamestate, gamestate } from 'src/main/Game';
 import { GameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
 import { StartScreenRenderer } from 'src/main/render/StartScreenRenderer';
@@ -35,6 +36,7 @@ export class GameRenderer {
   }
 
   async init() {
+    await this.textRenderer.init();
     const imageKeys = Object.keys(this.imagesNew);
     const promises: Promise<Record<string, HTMLImageElement>>[] = imageKeys.map((imageKey) => {
       const imageSrc = require(`src/game-data/images/${this.imagesNew[imageKey]}`);
@@ -54,17 +56,15 @@ export class GameRenderer {
         this.images[Object.keys(value)[0]] = value[Object.keys(value)[0]];
       });
     });
-
-    await this.textRenderer.init();
     await this.startScreenRenderer.init();
   }
 
   draw(objects: GameObject[]) {
     this.clearScreen();
 
-    if (true) {
+    if (gamestate === Gamestate.MENU) {
       this.drawStartScreen();
-    } else {
+    } else if (gamestate === Gamestate.LEVEL) {
       this.drawScene(objects);
       this.drawSidebar();
       if (this.debug) {

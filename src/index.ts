@@ -1,6 +1,5 @@
-import { Game } from 'src/main/Game';
+import { startGame } from 'src/main/Game';
 
 window.onload = () => {
-  const game = new Game();
-  void game.start();
+  void startGame();
 };
