@@ -1,17 +1,17 @@
-import { DIRECTION } from 'src/main/Direction';
+import { Direction } from 'src/main/Direction';
 import { EventsEmitter } from 'src/main/events/EventsEmitter';
 import { randomEnumValue } from 'src/utils/object';
 
 export class RandomEventsEmitter implements EventsEmitter {
-  private events: DIRECTION[] = [];
+  private events: Direction[] = [];
 
   constructor() {
     setInterval(() => {
-      this.events.push(randomEnumValue(DIRECTION));
+      this.events.push(randomEnumValue(Direction));
     }, 400);
   }
 
-  handleEvents(callback: (event: DIRECTION) => void): void {
+  handleEvents(callback: (event: Direction) => void): void {
     this.events.forEach((event) => callback(event));
     this.events = [];
   }

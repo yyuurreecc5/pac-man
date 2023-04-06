@@ -1,12 +1,12 @@
 import levelData from 'src/game-data/game-data.json';
 import imagesNew from 'src/game-data/images/images.json';
 import sprites from 'src/game-data/sprites/sprites.json';
-import { Gamestate, gamestate } from 'src/main/Game';
 import { GameObject } from 'src/main/GameObject';
 import { TLevelData } from 'src/main/LevelData';
 import { StartScreenRenderer } from 'src/main/render/StartScreenRenderer';
 import { Align, Color, TextRenderer } from 'src/main/render/TextRenderer';
 import { TSprites } from 'src/main/Sprite';
+import { Game } from 'src/main/Game';
 
 export const SIDE_BAR_WIDTH = 400;
 const DEBUG = false;
@@ -62,9 +62,9 @@ export class GameRenderer {
   draw(objects: GameObject[]) {
     this.clearScreen();
 
-    if (gamestate === Gamestate.MENU) {
+    if (Game.isInState(Game.State.MENU)) {
       this.drawStartScreen();
-    } else if (gamestate === Gamestate.LEVEL) {
+    } else if (Game.isInState(Game.State.LEVEL)) {
       this.drawScene(objects);
       this.drawSidebar();
       if (this.debug) {

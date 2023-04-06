@@ -1,29 +1,17 @@
-import entities from 'src/game-data/entities/entities.json';
 import { Audio } from 'src/main/audio/audio';
-import { DIRECTION } from 'src/main/Direction';
-import { ENTITY_NAME, TEntities } from 'src/main/Entity';
+import { Direction } from 'src/main/Direction';
 import { gameLoop } from 'src/main/GameLoop';
 import { GameObject } from 'src/main/GameObject';
-import { BUTTON_KEY, ControllerMain } from 'src/main/Input';
+import { ControllerMain } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
-import { levelData, TLevelData } from 'src/main/LevelData';
+import { levelData } from 'src/main/LevelData';
 import { MOVE_DIRECTION } from 'src/main/Move';
 import { GameRenderer } from 'src/main/render/GameRenderer';
 import { startScreenResponder } from 'src/main/render/StartScreenRenderer';
-import { states, TStates } from 'src/main/States';
+import { states } from 'src/main/States';
 import { getKeys } from 'src/utils/object';
 import './audio/audio';
-
-export enum Gamestate {
-  MENU = 'menu',
-  LEVEL = 'level',
-}
-
-export let gamestate: Gamestate = Gamestate.MENU;
-
-export function setGameState(gs: Gamestate) {
-  gamestate = gs;
-}
+import { Game } from 'src/main/Game';
 
 const renderer = new GameRenderer();
 
@@ -32,14 +20,14 @@ export async function initGame() {
   await renderer.init();
 }
 
-export function startGame() {
-  initGame();
-  setGameState(Gamestate.MENU);
+export async function startGame() {
+  await initGame();
+  Game.setState(Game.State.MENU);
   gameLoop(draw, update);
 }
 
 export async function startLevel() {
-  setGameState(Gamestate.LEVEL);
+  Game.setState(Game.State.LEVEL);
   Audio.getFile('/assets/audio/start.mp3').then((buffer) => {
     const track = Audio.playTrack(buffer);
   });
@@ -66,10 +54,10 @@ export function initGameObjects(): void {
 }
 
 function update(): void {
-  if (gamestate === Gamestate.LEVEL) {
+  if (Game.isInState(Game.State.LEVEL)) {
     const movableObjects = getMovableObjects();
     processInputs(movableObjects);
-    proccessCollisions(movableObjects);
+    processCollisions(movableObjects);
     updateTics();
   }
 }
@@ -85,13 +73,13 @@ function getMovableObjects(): GameObject[] {
 }
 
 document.addEventListener('keydown', (event) => {
-  if (gamestate === Gamestate.MENU) {
+  if (Game.isInState(Game.State.MENU)) {
     startScreenResponder(event);
   }
 });
 
 function processInputs(movableObjects: GameObject[]): void {
-  if (gamestate === Gamestate.LEVEL) {
+  if (Game.isInState(Game.State.LEVEL)) {
     gameLevelResponder(movableObjects);
   }
 }
@@ -102,12 +90,12 @@ function gameLevelResponder(movableObjects: GameObject[]) {
   });
 }
 
-function proccessCollisions(movableObjects: GameObject[]): void {
+function processCollisions(movableObjects: GameObject[]): void {
   movableObjects.forEach((movableObject) => {
     const diff = MOVE_DIRECTION[movableObject.direction].diff;
     let speed = Math.abs(movableObject[diff]);
 
-    let collisionObjectIndex: number = -1;
+    let collisionObjectIndex = -1;
     do {
       collisionObjectIndex = gameObjects.findIndex((object) => {
         return !!checkCollision(movableObject, object);
@@ -127,7 +115,7 @@ function proccessCollisions(movableObjects: GameObject[]): void {
 }
 
 function processInput(movableObject: GameObject): void {
-  movableObject.processInput((direction: DIRECTION) => {
+  movableObject.processInput((direction: Direction) => {
     const collisionObject = gameObjects.find((object) => {
       return isBlocked(movableObject, object, direction);
     });
@@ -156,13 +144,13 @@ function checkCollision(movableObject: GameObject, object: GameObject): GameObje
   return null;
 }
 
-function isBlocked(movableObject: GameObject, object: GameObject, direction: DIRECTION) {
+function isBlocked(movableObject: GameObject, object: GameObject, direction: Direction) {
   if (!needCheck(direction, movableObject, object)) return false;
   const md = MOVE_DIRECTION[direction];
   return movableObject[md.axis] === object[md.axis] - levelData.fieldSize[md.side] * md.sign;
 }
 
-function needCheck(direction: DIRECTION, movableObject: GameObject, object: GameObject) {
+function needCheck(direction: Direction, movableObject: GameObject, object: GameObject) {
   const md = MOVE_DIRECTION[direction];
   const isStartOfFieldByAxis =
     movableObject[md.axis] % levelData.fieldSize[md.side] <= Math.abs(movableObject[md.diff]);

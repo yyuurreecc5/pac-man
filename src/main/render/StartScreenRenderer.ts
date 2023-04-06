@@ -1,5 +1,5 @@
 import src from 'src/game-data/logo.png';
-import { startLevel } from 'src/main/Game';
+import { startLevel } from 'src/main/Main';
 import { levelData, TLevelData } from 'src/main/LevelData';
 import { SIDE_BAR_WIDTH } from 'src/main/render/GameRenderer';
 import { Align, Color, TextRenderer } from 'src/main/render/TextRenderer';

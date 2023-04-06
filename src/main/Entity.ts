@@ -1,22 +1,22 @@
-export enum ENTITY_NAME {
+export enum EntityName {
   PACMAN = 'pacman',
   PINKY = 'ghost',
 }
 
-export enum ENTITY_STATE {
+export enum EntityState {
   INIT = 'initState',
   DEATH = 'deathState',
 }
 
 export type TEntity = {
-  name: ENTITY_NAME;
+  name: EntityName;
   speed: number;
   size: {
     width: number;
     height: number;
   };
-  initState: ENTITY_STATE;
-  deathState: ENTITY_STATE;
+  initState: EntityState;
+  deathState: EntityState;
 };
 
-export type TEntities = Record<ENTITY_NAME, TEntity>;
+export type TEntities = Record<EntityName, TEntity>;

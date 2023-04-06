@@ -1,8 +1,8 @@
-import { DIRECTION } from 'src/main/Direction';
+import { Direction } from 'src/main/Direction';
 
 export type TSprites = Record<string, TSprite>;
 
-export type TSprite = Record<DIRECTION, TSpriteOfDirection>;
+export type TSprite = Record<Direction, TSpriteOfDirection>;
 
 export type TSpriteOfDirection = {
   image: string;

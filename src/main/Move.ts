@@ -1,4 +1,4 @@
-import { DIRECTION } from 'src/main/Direction';
+import { Direction } from 'src/main/Direction';
 
 export type TMove = {
   sign: -1 | 1;
@@ -10,10 +10,10 @@ export type TMove = {
   normalSide: 'width' | 'height';
 };
 
-export type TDirectionMove = Record<DIRECTION, TMove>;
+export type TDirectionMove = Record<Direction, TMove>;
 
 export const MOVE_DIRECTION: TDirectionMove = {
-  [DIRECTION.RIGHT]: {
+  [Direction.RIGHT]: {
     sign: 1,
     axis: 'x',
     normalAxis: 'y',
@@ -22,7 +22,7 @@ export const MOVE_DIRECTION: TDirectionMove = {
     side: 'width',
     normalSide: 'height',
   },
-  [DIRECTION.LEFT]: {
+  [Direction.LEFT]: {
     sign: -1,
     axis: 'x',
     normalAxis: 'y',
@@ -31,7 +31,7 @@ export const MOVE_DIRECTION: TDirectionMove = {
     side: 'width',
     normalSide: 'height',
   },
-  [DIRECTION.UP]: {
+  [Direction.UP]: {
     sign: -1,
     axis: 'y',
     normalAxis: 'x',
@@ -40,7 +40,7 @@ export const MOVE_DIRECTION: TDirectionMove = {
     side: 'height',
     normalSide: 'width',
   },
-  [DIRECTION.DOWN]: {
+  [Direction.DOWN]: {
     sign: 1,
     axis: 'y',
     normalAxis: 'x',

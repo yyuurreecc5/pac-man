@@ -1,5 +1,5 @@
-import { DIRECTION } from 'src/main/Direction';
-import { ENTITY_NAME } from 'src/main/Entity';
+import { Direction } from 'src/main/Direction';
+import { EntityName } from 'src/main/Entity';
 import { EventsEmitter } from 'src/main/events/EventsEmitter';
 import { getEventEmitter } from 'src/main/Input';
 import { LAYER } from 'src/main/Layer';
@@ -12,11 +12,11 @@ import levelData from 'src/game-data/game-data.json';
 
 export class GameObject {
   public layer: LAYER;
-  public name: ENTITY_NAME;
+  public name: EntityName;
   public x: number;
   public y: number;
   public flipped: boolean;
-  public direction: DIRECTION;
+  public direction: Direction;
   public currentState: TState;
   public eventEmitter: EventsEmitter | null;
   public size: {
@@ -27,7 +27,7 @@ export class GameObject {
   public dy: number;
   public tics: number;
   public speed: number;
-  private tryDirection: DIRECTION;
+  private tryDirection: Direction;
 
   constructor(layer: LAYER, entry: TLevelDataEntry) {
     const entity = entities[entry.name];
@@ -68,7 +68,7 @@ export class GameObject {
     this[moveObject.diff] = this.speed * moveObject.sign;
   }
 
-  processInput(callback: (direction: DIRECTION) => void) {
+  processInput(callback: (direction: Direction) => void) {
     this.eventEmitter.handleEvents((direction) => {
       this.tryDirection = direction;
     });

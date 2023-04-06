@@ -1,6 +1,6 @@
 import levelDataJson from 'src/game-data/game-data.json';
-import { DIRECTION } from 'src/main/Direction';
-import { ENTITY_NAME } from 'src/main/Entity';
+import { Direction } from 'src/main/Direction';
+import { EntityName } from 'src/main/Entity';
 import { LAYER } from 'src/main/Layer';
 import { DeepReadonly } from 'src/utils/types';
 
@@ -17,10 +17,10 @@ export type TLevelData = {
 };
 
 export type TLevelDataEntry = {
-  name: ENTITY_NAME;
+  name: EntityName;
   coordinates: { x: number; y: number };
   flipped: boolean;
-  direction: DIRECTION;
+  direction: Direction;
 };
 
 export type TLevelDataEntries = TLevelDataEntry[];

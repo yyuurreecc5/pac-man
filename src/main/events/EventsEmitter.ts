@@ -1,5 +1,5 @@
-import { DIRECTION } from 'src/main/Direction';
+import { Direction } from 'src/main/Direction';
 
 export interface EventsEmitter {
-  handleEvents(callback: (event: DIRECTION) => void): void;
+  handleEvents(callback: (event: Direction) => void): void;
 }
